@@ -279,6 +279,7 @@ export function useRoomController({
         }
         avatarVisualRef.current = restingAvatar
         pathRef.current = null
+        hasQueuedInteractionRef.current = false
         setCurrentTile(restingAvatar)
         saveRoomAvatarState(restingAvatar)
 
@@ -297,9 +298,15 @@ export function useRoomController({
         return restingAvatar
       }
 
-      const segmentIndex = Math.floor(path.progress)
+      const segmentIndex = Math.min(Math.floor(path.progress), path.nodes.length - 2)
       const startNode = path.nodes[segmentIndex]
       const endNode = path.nodes[segmentIndex + 1]
+      if (!startNode || !endNode) {
+        pathRef.current = null
+        pendingHotspotRef.current = null
+        hasQueuedInteractionRef.current = false
+        return avatarVisualRef.current
+      }
       const t = path.progress - segmentIndex
       const dx = endNode.x - startNode.x
       const dy = endNode.y - startNode.y

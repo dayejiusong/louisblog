@@ -33,6 +33,11 @@ type TilePoint = {
   y: number
 }
 
+type PendingPointer = {
+  relativeX: number
+  relativeY: number
+}
+
 type Props = {
   focusRef: RefObject<HTMLDivElement | null>
   hotspots: RoomHotspot[]
@@ -219,6 +224,8 @@ export default function PersonalRoom({
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const hitAreasRef = useRef<HitArea[]>([])
   const hoverRef = useRef<SectionSlug | null>(hoverHotspotId)
+  const pendingPointerRef = useRef<PendingPointer | null>(null)
+  const sceneReadyRef = useRef(false)
   const sceneStateRef = useRef({
     hoverHotspotId,
     linkedHotspotId,
@@ -229,8 +236,10 @@ export default function PersonalRoom({
   })
 
   const [size, setSize] = useState({ width: 640, height: 780 })
+  const [sceneReady, setSceneReady] = useState(false)
   const grid = useMemo(() => buildGrid(hotspots), [hotspots])
   const hotspotMap = useMemo(() => new Map(hotspots.map((hotspot) => [hotspot.id, hotspot])), [hotspots])
+  const isInteractionEnabled = interactionReady && sceneReady
 
   useEffect(() => {
     sceneStateRef.current = {
@@ -243,6 +252,16 @@ export default function PersonalRoom({
     }
     hoverRef.current = hoverHotspotId
   }, [activeSection, bubble, hoverHotspotId, inspectFlash, linkedHotspotId, modalOpen])
+
+  useEffect(() => {
+    if (!isInteractionEnabled || modalOpen) return
+    focusRef.current?.focus({ preventScroll: true })
+  }, [focusRef, isInteractionEnabled, modalOpen])
+
+  useEffect(() => {
+    sceneReadyRef.current = false
+    setSceneReady(false)
+  }, [hotspots, size.height, size.width])
 
   useEffect(() => {
     if (!containerRef.current) return
@@ -284,26 +303,12 @@ export default function PersonalRoom({
     [onHoverHotspot]
   )
 
-  const handlePointerMove = useCallback(
-    (event: React.PointerEvent<HTMLCanvasElement>) => {
+  const triggerInteractionAt = useCallback(
+    (clientX: number, clientY: number) => {
       const currentScene = sceneStateRef.current
-      if (!interactionReady || currentScene.modalOpen || currentScene.inspectFlash) {
-        updateHover(null)
-        return
-      }
+      if (currentScene.modalOpen || currentScene.inspectFlash) return
 
-      const result = handlePointerAt(event.clientX, event.clientY)
-      updateHover(result?.hit?.id ?? null)
-    },
-    [handlePointerAt, updateHover]
-  )
-
-  const handlePointerUp = useCallback(
-    (event: React.PointerEvent<HTMLCanvasElement>) => {
-      const currentScene = sceneStateRef.current
-      if (!interactionReady || currentScene.modalOpen || currentScene.inspectFlash) return
-
-      const result = handlePointerAt(event.clientX, event.clientY)
+      const result = handlePointerAt(clientX, clientY)
       if (!result) return
 
       if (result.hit) {
@@ -322,7 +327,60 @@ export default function PersonalRoom({
       const nextTile = findNearestWalkableTile({ x: tile.tx, y: tile.ty }, grid)
       void onMoveToTile(nextTile)
     },
-    [grid.cols, grid.rows, handlePointerAt, interactionReady, onInteractHotspot, onMoveToTile, size.height, size.width]
+    [grid, handlePointerAt, onInteractHotspot, onMoveToTile, size.height, size.width]
+  )
+
+  useEffect(() => {
+    if (!isInteractionEnabled || modalOpen || inspectFlash) return
+    const pendingPointer = pendingPointerRef.current
+    if (!pendingPointer) return
+
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const rect = canvas.getBoundingClientRect()
+    pendingPointerRef.current = null
+    triggerInteractionAt(
+      rect.left + pendingPointer.relativeX * rect.width,
+      rect.top + pendingPointer.relativeY * rect.height
+    )
+  }, [inspectFlash, isInteractionEnabled, modalOpen, triggerInteractionAt])
+
+  const handlePointerMove = useCallback(
+    (event: React.PointerEvent<HTMLCanvasElement>) => {
+      const currentScene = sceneStateRef.current
+      if (!isInteractionEnabled || currentScene.modalOpen || currentScene.inspectFlash) {
+        updateHover(null)
+        return
+      }
+
+      const result = handlePointerAt(event.clientX, event.clientY)
+      updateHover(result?.hit?.id ?? null)
+    },
+    [handlePointerAt, isInteractionEnabled, updateHover]
+  )
+
+  const handlePointerUp = useCallback(
+    (event: React.PointerEvent<HTMLCanvasElement>) => {
+      const currentScene = sceneStateRef.current
+      focusRef.current?.focus({ preventScroll: true })
+
+      if (!isInteractionEnabled) {
+        const canvas = canvasRef.current
+        const rect = canvas?.getBoundingClientRect()
+        if (rect && rect.width > 0 && rect.height > 0) {
+          pendingPointerRef.current = {
+            relativeX: (event.clientX - rect.left) / rect.width,
+            relativeY: (event.clientY - rect.top) / rect.height,
+          }
+        }
+        return
+      }
+
+      if (currentScene.modalOpen || currentScene.inspectFlash) return
+      pendingPointerRef.current = null
+      triggerInteractionAt(event.clientX, event.clientY)
+    },
+    [focusRef, isInteractionEnabled, triggerInteractionAt]
   )
 
   useEffect(() => {
@@ -411,6 +469,11 @@ export default function PersonalRoom({
 
       scene.sort((a, b) => a.sort - b.sort).forEach((item) => item.draw())
 
+      if (!sceneReadyRef.current && size.width > 0 && size.height > 0 && hitAreasRef.current.length >= hotspots.length) {
+        sceneReadyRef.current = true
+        setSceneReady(true)
+      }
+
       if (currentScene.bubble && currentScene.bubble.expiresAt > Date.now()) {
         const avatarPoint = projectIso(avatarForDraw.x, avatarForDraw.y, params)
         drawBubble(ctx, avatarPoint.px, avatarPoint.py - 26, currentScene.bubble.text)
@@ -478,7 +541,7 @@ export default function PersonalRoom({
           width={size.width}
           height={size.height}
           className={`pixel-canvas block w-full touch-manipulation ${
-            !interactionReady ? "cursor-wait" : modalOpen ? "cursor-default" : hoverHotspotId ? "cursor-pointer" : "cursor-crosshair"
+            !isInteractionEnabled ? "cursor-wait" : modalOpen ? "cursor-default" : hoverHotspotId ? "cursor-pointer" : "cursor-crosshair"
           }`}
           onPointerMove={handlePointerMove}
           onPointerLeave={() => updateHover(null)}
@@ -486,7 +549,7 @@ export default function PersonalRoom({
         />
         <div className="scanline-overlay pointer-events-none absolute inset-0 opacity-25" />
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-[linear-gradient(180deg,transparent,rgba(9,6,4,0.28))]" />
-        {!interactionReady && (
+        {!isInteractionEnabled && (
           <div className="pointer-events-none absolute inset-0 grid place-items-center bg-[linear-gradient(180deg,rgba(12,10,8,0.15),rgba(12,10,8,0.38))]">
             <div className="pixel-panel max-w-xs text-center">
               <div className="font-display text-[11px] uppercase tracking-[0.35em] text-[color:var(--game-muted)]">房间加载中</div>
