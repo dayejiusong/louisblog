@@ -92,6 +92,43 @@ function buildWalkable(hotspots: RoomHotspot[]) {
   return walkable
 }
 
+function findNearestWalkableNode(target: PathNode, walkable: boolean[]) {
+  const start = {
+    x: clamp(Math.round(target.x), 1, ROOM_COLS - 2),
+    y: clamp(Math.round(target.y), 1, ROOM_ROWS - 2),
+  }
+
+  if (walkable[idx(start.x, start.y, ROOM_COLS)]) {
+    return start
+  }
+
+  const queue: PathNode[] = [start]
+  const visited = new Set<string>([`${start.x},${start.y}`])
+
+  while (queue.length) {
+    const current = queue.shift()
+    if (!current) break
+
+    for (const [nx, ny] of [
+      [current.x + 1, current.y],
+      [current.x - 1, current.y],
+      [current.x, current.y + 1],
+      [current.x, current.y - 1],
+    ]) {
+      if (nx < 1 || ny < 1 || nx > ROOM_COLS - 2 || ny > ROOM_ROWS - 2) continue
+      const key = `${nx},${ny}`
+      if (visited.has(key)) continue
+      if (walkable[idx(nx, ny, ROOM_COLS)]) {
+        return { x: nx, y: ny }
+      }
+      visited.add(key)
+      queue.push({ x: nx, y: ny })
+    }
+  }
+
+  return start
+}
+
 export function useRoomController({
   initialAvatar,
   hotspots,
@@ -108,17 +145,29 @@ export function useRoomController({
 
   const walkable = useMemo(() => buildWalkable(hotspots), [hotspots])
   const hotspotMap = useMemo(() => new Map(hotspots.map((hotspot) => [hotspot.id, hotspot])), [hotspots])
+  const sanitizedInitialAvatar = useMemo(() => {
+    const nearest = findNearestWalkableNode(initialAvatar, walkable)
+    return {
+      x: nearest.x,
+      y: nearest.y,
+      facing: initialAvatar.facing,
+    } satisfies RoomAvatarState
+  }, [initialAvatar, walkable])
 
   const avatarVisualRef = useRef<RoomAvatarState>(initialAvatar)
   const pathRef = useRef<PathState | null>(null)
   const pendingHotspotRef = useRef<RoomHotspot | null>(null)
   const bubbleRef = useRef<BubbleState | null>(null)
   const openTimerRef = useRef<number | null>(null)
+  const hasQueuedInteractionRef = useRef(false)
 
   useEffect(() => {
-    avatarVisualRef.current = initialAvatar
-    setCurrentTile(initialAvatar)
-  }, [initialAvatar])
+    if (hasQueuedInteractionRef.current) return
+    avatarVisualRef.current = sanitizedInitialAvatar
+    pathRef.current = null
+    pendingHotspotRef.current = null
+    setCurrentTile(sanitizedInitialAvatar)
+  }, [sanitizedInitialAvatar])
 
   useEffect(() => {
     bubbleRef.current = bubble
@@ -154,7 +203,7 @@ export function useRoomController({
     async (target: PathNode, hotspot?: RoomHotspot | null) => {
       if (modalOpen || inspectFlash) return
 
-      await onPrimeAudio()
+      void onPrimeAudio().catch(() => undefined)
       const start = roundAvatar(avatarVisualRef.current)
       const goal = {
         x: clamp(target.x, 1, ROOM_COLS - 2),
@@ -182,6 +231,7 @@ export function useRoomController({
         onPlaySound("confirm")
       }
 
+      hasQueuedInteractionRef.current = true
       pendingHotspotRef.current = hotspot ?? null
       pathRef.current = { nodes: path, progress: 0 }
       const nextNode = path[1]

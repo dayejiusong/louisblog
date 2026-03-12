@@ -15,7 +15,7 @@ const silkscreen = Silkscreen({
 })
 
 export const metadata: Metadata = {
-  title: "Louis Room",
+  title: "Louis 房间",
   description: "一个可点击、可漫游的像素 RPG 风格个人博客房间。",
   icons: {
     icon: [

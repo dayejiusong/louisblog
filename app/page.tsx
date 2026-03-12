@@ -14,6 +14,7 @@ const defaultAvatar: RoomAvatarState = { x: 10, y: 10, facing: "N" }
 export default function Page() {
   const roomFocusRef = useRef<HTMLDivElement | null>(null)
   const [initialAvatar, setInitialAvatar] = useState<RoomAvatarState>(defaultAvatar)
+  const [roomReady, setRoomReady] = useState(false)
   const audio = usePixelAudio()
   const modal = useArchiveModal({
     onPlaySound: audio.playSound,
@@ -22,6 +23,7 @@ export default function Page() {
   useEffect(() => {
     const restored = loadRoomAvatarState() ?? defaultAvatar
     setInitialAvatar(restored)
+    setRoomReady(true)
   }, [])
 
   const openSectionFromRoom = useCallback(
@@ -61,7 +63,7 @@ export default function Page() {
 
   const openShortcut = useCallback(
     async (slug: SectionSlug, trigger: HTMLElement | null) => {
-      await audio.prime()
+      void audio.prime().catch(() => undefined)
       modal.openSection(slug, trigger)
     },
     [audio, modal]
@@ -76,7 +78,7 @@ export default function Page() {
           <div className="grid gap-4 border-b-4 border-[color:var(--game-ink)] bg-[linear-gradient(180deg,rgba(255,242,210,0.3),rgba(34,26,22,0.06))] px-4 py-4 sm:px-6 lg:grid-cols-[1fr_auto] lg:items-end">
             <div>
               <div className="font-display text-[11px] uppercase tracking-[0.35em] text-[color:var(--game-muted)] sm:text-xs">
-                Louis Room / Personal Blog
+                Louis 房间 / 个人博客
               </div>
               <h1 className="mt-3 text-3xl font-black leading-tight text-[color:var(--game-text)] sm:text-5xl lg:text-6xl">
                 走进房间，点开我的游戏、骑行、旅行、书架和唱片。
@@ -88,7 +90,7 @@ export default function Page() {
 
             <div className="pixel-panel max-w-sm">
               <div className="font-display text-xs uppercase tracking-[0.3em] text-[color:var(--game-muted)]">
-                Hotspots
+                房间物件
               </div>
               <div className="mt-3 grid gap-2 text-sm text-[color:var(--game-text)]">
                 {roomHotspots.map((hotspot) => (
@@ -105,6 +107,7 @@ export default function Page() {
             <PersonalRoom
               focusRef={roomFocusRef}
               hotspots={roomHotspots}
+              interactionReady={roomReady}
               modalOpen={modal.phase !== "closed"}
               activeSection={modal.activeSection}
               currentTile={room.state.currentTile}

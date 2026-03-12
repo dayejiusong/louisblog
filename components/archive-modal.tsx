@@ -70,18 +70,18 @@ export default function ArchiveModal({
   }, [onClose])
 
   const sectionProgress = useMemo(
-    () => `${entryCount(section)} logs / ${section.groups.length} groups`,
+    () => `${entryCount(section)} 条记录 / ${section.groups.length} 个分组`,
     [section]
   )
 
   const hudItems = useMemo(
     () => [
-      { label: "Room Object", value: section.roomLabel },
+      { label: "当前物件", value: section.roomLabel },
       ...section.display.hudStats,
-      { label: "Progress", value: sectionProgress },
+      { label: "进度", value: sectionProgress },
       {
-        label: "Audio",
-        value: audioUnlocked ? (audioEnabled ? "Pixel ambience on" : "Muted") : "Waiting for first interaction",
+        label: "音效",
+        value: audioUnlocked ? (audioEnabled ? "像素环境音已开启" : "像素环境音已静音") : "等待首次交互解锁",
       },
     ],
     [audioEnabled, audioUnlocked, section, sectionProgress]
@@ -89,7 +89,7 @@ export default function ArchiveModal({
 
   return (
     <div className={`archive-overlay archive-overlay--${phase}`}>
-      <button type="button" className="archive-backdrop" aria-label="Close archive" onClick={onClose} />
+      <button type="button" className="archive-backdrop" aria-label="关闭日志" onClick={onClose} />
 
       <div
         ref={(node) => {
@@ -114,10 +114,10 @@ export default function ArchiveModal({
 
           <div className="archive-header__actions">
             <button type="button" className="pixel-button px-3 py-2 text-xs sm:text-sm" onClick={onToggleAudio}>
-              {audioEnabled ? "Audio on" : "Audio off"}
+              {audioEnabled ? "环境音开启" : "环境音关闭"}
             </button>
             <button type="button" className="pixel-button px-3 py-2 text-xs sm:text-sm" onClick={onClose}>
-              Return to room
+              返回房间
             </button>
           </div>
         </header>
@@ -158,7 +158,7 @@ export default function ArchiveModal({
 
             <div className="mt-5 pixel-panel archive-sidebar__notes">
               <div className="font-display text-[11px] uppercase tracking-[0.35em] text-[color:var(--game-muted)]">
-                System Feed
+                房间信息
               </div>
               <div className="mt-4 grid gap-3">
                 {section.stats.map((stat) => (

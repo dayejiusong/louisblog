@@ -45,22 +45,22 @@ export default function BlogSectionPage({ section }: Props) {
 
       <section className="journal-summary journal-summary--compact">
         <div className="font-display text-[11px] uppercase tracking-[0.35em] text-[color:var(--game-muted)]">
-          Field Notes
+          冒险摘要
         </div>
         <h3 className="mt-3 text-2xl font-black text-[color:var(--game-text)] sm:text-3xl">{section.subtitle}</h3>
         <p className="mt-3 text-sm leading-7 text-[color:var(--game-subtle)] sm:text-base">{section.description}</p>
 
         <div className="summary-stats">
           <div className="summary-chip">
-            <span>Groups</span>
+            <span>分组数</span>
             <strong>{section.groups.length}</strong>
           </div>
           <div className="summary-chip">
-            <span>Entries</span>
+            <span>记录数</span>
             <strong>{totalEntries}</strong>
           </div>
           <div className="summary-chip">
-            <span>Archive</span>
+            <span>档案类型</span>
             <strong>{section.display.groupLabel}</strong>
           </div>
         </div>
@@ -85,7 +85,7 @@ export default function BlogSectionPage({ section }: Props) {
                 <h3 className="mt-2 text-2xl font-black text-[color:var(--game-text)]">{group.label}</h3>
                 <p className="mt-3 max-w-3xl text-sm leading-7 text-[color:var(--game-subtle)]">{group.description}</p>
               </div>
-              <div className="pixel-chip text-xs">{group.entries.length} logs</div>
+              <div className="pixel-chip text-xs">{group.entries.length} 条记录</div>
             </div>
 
             <div className="journal-entry-grid">

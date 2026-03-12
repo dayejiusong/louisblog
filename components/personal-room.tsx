@@ -28,9 +28,15 @@ type SceneContext = {
   time: number
 }
 
+type TilePoint = {
+  x: number
+  y: number
+}
+
 type Props = {
   focusRef: RefObject<HTMLDivElement | null>
   hotspots: RoomHotspot[]
+  interactionReady: boolean
   modalOpen: boolean
   activeSection: SectionSlug | null
   currentTile: RoomAvatarState
@@ -51,6 +57,7 @@ const ROOM_COLS = 20
 const ROOM_ROWS = 16
 const TILE_W = 58
 const TILE_H = 29
+const HOTSPOT_SNAP_DISTANCE = 30
 
 const HITBOXES: Record<SectionSlug, { offsetX: number; offsetY: number; width: number; height: number }> = {
   games: { offsetX: -48, offsetY: -58, width: 96, height: 76 },
@@ -141,9 +148,58 @@ function pushHitArea(hitAreas: HitArea[], hotspot: RoomHotspot | undefined, poin
   })
 }
 
+function clampTile(x: number, y: number, grid: Grid) {
+  return {
+    x: Math.max(1, Math.min(grid.cols - 2, x)),
+    y: Math.max(1, Math.min(grid.rows - 2, y)),
+  }
+}
+
+function isWalkable(tile: TilePoint, grid: Grid) {
+  return grid.walkable[idx(tile.x, tile.y, grid.cols)]
+}
+
+function distanceToHitArea(px: number, py: number, area: HitArea) {
+  const dx = Math.max(area.x - px, 0, px - (area.x + area.w))
+  const dy = Math.max(area.y - py, 0, py - (area.y + area.h))
+  return Math.hypot(dx, dy)
+}
+
+function findNearestWalkableTile(target: TilePoint, grid: Grid) {
+  const start = clampTile(target.x, target.y, grid)
+  if (isWalkable(start, grid)) return start
+
+  const queue: TilePoint[] = [start]
+  const visited = new Set<string>([`${start.x},${start.y}`])
+
+  while (queue.length) {
+    const current = queue.shift()
+    if (!current) break
+
+    const neighbors: TilePoint[] = [
+      { x: current.x + 1, y: current.y },
+      { x: current.x - 1, y: current.y },
+      { x: current.x, y: current.y + 1 },
+      { x: current.x, y: current.y - 1 },
+    ]
+
+    for (const neighbor of neighbors) {
+      if (neighbor.x < 1 || neighbor.y < 1 || neighbor.x > grid.cols - 2 || neighbor.y > grid.rows - 2) continue
+      const key = `${neighbor.x},${neighbor.y}`
+      if (visited.has(key)) continue
+      if (isWalkable(neighbor, grid)) return neighbor
+      visited.add(key)
+      queue.push(neighbor)
+    }
+  }
+
+  return start
+}
+
 export default function PersonalRoom({
   focusRef,
   hotspots,
+  interactionReady,
   modalOpen,
   activeSection,
   currentTile,
@@ -209,9 +265,13 @@ export default function PersonalRoom({
     const rect = canvas.getBoundingClientRect()
     const px = clientX - rect.left
     const py = clientY - rect.top
-    const hit = hitAreasRef.current.find(
-      (area) => px >= area.x && px <= area.x + area.w && py >= area.y && py <= area.y + area.h
-    )
+    const hit =
+      hitAreasRef.current.find((area) => px >= area.x && px <= area.x + area.w && py >= area.y && py <= area.y + area.h) ??
+      hitAreasRef.current
+        .map((area) => ({ area, distance: distanceToHitArea(px, py, area) }))
+        .filter((candidate) => candidate.distance <= HOTSPOT_SNAP_DISTANCE)
+        .sort((left, right) => left.distance - right.distance)[0]?.area
+
     return { px, py, hit }
   }, [])
 
@@ -227,7 +287,7 @@ export default function PersonalRoom({
   const handlePointerMove = useCallback(
     (event: React.PointerEvent<HTMLCanvasElement>) => {
       const currentScene = sceneStateRef.current
-      if (currentScene.modalOpen || currentScene.inspectFlash) {
+      if (!interactionReady || currentScene.modalOpen || currentScene.inspectFlash) {
         updateHover(null)
         return
       }
@@ -241,7 +301,7 @@ export default function PersonalRoom({
   const handlePointerUp = useCallback(
     (event: React.PointerEvent<HTMLCanvasElement>) => {
       const currentScene = sceneStateRef.current
-      if (currentScene.modalOpen || currentScene.inspectFlash) return
+      if (!interactionReady || currentScene.modalOpen || currentScene.inspectFlash) return
 
       const result = handlePointerAt(event.clientX, event.clientY)
       if (!result) return
@@ -259,9 +319,10 @@ export default function PersonalRoom({
         originY: origin.originY,
       }
       const tile = unprojectIso(result.px, result.py, params)
-      void onMoveToTile({ x: tile.tx, y: tile.ty })
+      const nextTile = findNearestWalkableTile({ x: tile.tx, y: tile.ty }, grid)
+      void onMoveToTile(nextTile)
     },
-    [grid.cols, grid.rows, handlePointerAt, onInteractHotspot, onMoveToTile, size.height, size.width]
+    [grid.cols, grid.rows, handlePointerAt, interactionReady, onInteractHotspot, onMoveToTile, size.height, size.width]
   )
 
   useEffect(() => {
@@ -385,7 +446,7 @@ export default function PersonalRoom({
       <div className="mb-3 flex flex-wrap items-start justify-between gap-3 px-1">
         <div>
           <div className="font-display text-[11px] uppercase tracking-[0.35em] text-[rgba(255,247,226,0.8)]">
-            Room Runtime
+            房间交互
           </div>
           <div className="mt-2 text-sm text-[rgba(255,245,220,0.92)]">
             点击或触摸房间物件，角色会先走过去，再打开对应的冒险日志窗。
@@ -396,10 +457,10 @@ export default function PersonalRoom({
           <div className="pixel-chip bg-[rgba(255,246,220,0.85)] text-xs">
             {modalOpen
               ? activeSection
-                ? `Archive / ${hotspotMap.get(activeSection)?.label ?? "Open"}`
-                : "Archive open"
+                ? `日志 / ${hotspotMap.get(activeSection)?.label ?? "打开中"}`
+                : "日志已打开"
               : hoverHotspotId
-                ? hotspotMap.get(hoverHotspotId)?.label ?? "Free roam"
+                ? hotspotMap.get(hoverHotspotId)?.label ?? "房间漫游"
                 : `坐标 ${currentTile.x},${currentTile.y}`}
           </div>
           <button type="button" className="pixel-button px-3 py-2 text-xs sm:text-sm" onClick={onToggleAudio}>
@@ -416,13 +477,23 @@ export default function PersonalRoom({
           ref={canvasRef}
           width={size.width}
           height={size.height}
-          className={`pixel-canvas block w-full touch-manipulation ${modalOpen ? "cursor-default" : hoverHotspotId ? "cursor-pointer" : "cursor-crosshair"}`}
+          className={`pixel-canvas block w-full touch-manipulation ${
+            !interactionReady ? "cursor-wait" : modalOpen ? "cursor-default" : hoverHotspotId ? "cursor-pointer" : "cursor-crosshair"
+          }`}
           onPointerMove={handlePointerMove}
           onPointerLeave={() => updateHover(null)}
           onPointerUp={handlePointerUp}
         />
         <div className="scanline-overlay pointer-events-none absolute inset-0 opacity-25" />
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-[linear-gradient(180deg,transparent,rgba(9,6,4,0.28))]" />
+        {!interactionReady && (
+          <div className="pointer-events-none absolute inset-0 grid place-items-center bg-[linear-gradient(180deg,rgba(12,10,8,0.15),rgba(12,10,8,0.38))]">
+            <div className="pixel-panel max-w-xs text-center">
+              <div className="font-display text-[11px] uppercase tracking-[0.35em] text-[color:var(--game-muted)]">房间加载中</div>
+              <p className="mt-3 text-sm leading-7 text-[color:var(--game-text)]">正在同步角色位置和房间状态，马上就可以直接点击地板或物件了。</p>
+            </div>
+          </div>
+        )}
         <div
           className={`pointer-events-none absolute inset-0 transition-opacity duration-200 ${
             inspectFlash || modalOpen ? "opacity-100" : "opacity-0"
