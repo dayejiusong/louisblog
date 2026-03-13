@@ -1,23 +1,21 @@
-"use client"
+﻿"use client"
 
 import { useCallback, useEffect, useMemo, useRef, useState, type MutableRefObject, type RefObject } from "react"
 import { projectIso, unprojectIso, type IsoProjectParams } from "@/lib/iso"
 import type { RoomHotspot, SectionSlug } from "@/lib/blog-content"
+import type { DogAnimationState, DogNpcState } from "@/hooks/use-dog-npc"
 import type { BubbleState } from "@/hooks/use-room-controller"
+import { buildRoomGrid, findNearestWalkableTile, roomGridIndex, type RoomGrid } from "@/lib/room-grid"
 import type { RoomAvatarState } from "@/lib/room-session"
 
-type HitArea = {
-  id: SectionSlug
+type HitTarget = {
+  kind: "hotspot" | "dog"
+  id: SectionSlug | "dog"
   x: number
   y: number
   w: number
   h: number
-}
-
-type Grid = {
-  cols: number
-  rows: number
-  walkable: boolean[]
+  snapDistance: number
 }
 
 type SceneContext = {
@@ -26,11 +24,6 @@ type SceneContext = {
   tileW: number
   tileH: number
   time: number
-}
-
-type TilePoint = {
-  x: number
-  y: number
 }
 
 type PendingPointer = {
@@ -51,18 +44,21 @@ type Props = {
   inspectFlash: boolean
   audioEnabled: boolean
   avatarVisualRef: MutableRefObject<RoomAvatarState>
+  dogVisualRef: MutableRefObject<RoomAvatarState>
+  dogState: DogNpcState
   onMoveToTile: (target: { x: number; y: number }) => void | Promise<void>
   onInteractHotspot: (hotspotId: SectionSlug) => void | Promise<void>
+  onInteractDog: () => void
   onHoverHotspot: (hotspotId: SectionSlug | null) => void
   onToggleAudio: () => void
   tick: (dt: number) => RoomAvatarState
+  tickDog: (dt: number) => RoomAvatarState
 }
 
-const ROOM_COLS = 20
-const ROOM_ROWS = 16
 const TILE_W = 58
 const TILE_H = 29
 const HOTSPOT_SNAP_DISTANCE = 30
+const DOG_SNAP_DISTANCE = 18
 
 const HITBOXES: Record<SectionSlug, { offsetX: number; offsetY: number; width: number; height: number }> = {
   games: { offsetX: -48, offsetY: -58, width: 96, height: 76 },
@@ -70,10 +66,6 @@ const HITBOXES: Record<SectionSlug, { offsetX: number; offsetY: number; width: n
   travel: { offsetX: -44, offsetY: -90, width: 88, height: 58 },
   books: { offsetX: -38, offsetY: -74, width: 40, height: 82 },
   music: { offsetX: -28, offsetY: -44, width: 66, height: 54 },
-}
-
-function idx(x: number, y: number, cols: number) {
-  return y * cols + x
 }
 
 function computeCenteredOrigin(width: number, height: number, cols: number, rows: number, tileW: number, tileH: number) {
@@ -96,109 +88,46 @@ function computeCenteredOrigin(width: number, height: number, cols: number, rows
   }
 }
 
-function buildGrid(hotspots: RoomHotspot[]) {
-  const walkable = new Array(ROOM_COLS * ROOM_ROWS).fill(true)
-
-  const block = (x: number, y: number) => {
-    if (x >= 0 && y >= 0 && x < ROOM_COLS && y < ROOM_ROWS) {
-      walkable[idx(x, y, ROOM_COLS)] = false
-    }
-  }
-
-  for (let x = 0; x < ROOM_COLS; x += 1) {
-    block(x, 0)
-    block(x, ROOM_ROWS - 1)
-  }
-
-  for (let y = 0; y < ROOM_ROWS; y += 1) {
-    block(0, y)
-    block(ROOM_COLS - 1, y)
-  }
-
-  hotspots.forEach((hotspot) => {
-    hotspot.footprint.forEach((tile) => block(tile.x, tile.y))
-  })
-
-  ;[
-    [6, 11],
-    [7, 11],
-    [8, 11],
-    [11, 10],
-    [12, 10],
-    [16, 4],
-  ].forEach(([x, y]) => block(x, y))
-
-  return {
-    cols: ROOM_COLS,
-    rows: ROOM_ROWS,
-    walkable,
-  } satisfies Grid
-}
-
 function getHighlightMode(hotspotId: SectionSlug, hoverId: SectionSlug | null, linkedId: SectionSlug | null) {
   if (linkedId === hotspotId) return "active" as const
   if (hoverId === hotspotId) return "hover" as const
   return "idle" as const
 }
 
-function pushHitArea(hitAreas: HitArea[], hotspot: RoomHotspot | undefined, point: { px: number; py: number }) {
+function pushHotspotHitArea(hitAreas: HitTarget[], hotspot: RoomHotspot | undefined, point: { px: number; py: number }) {
   if (!hotspot) return
   const hitbox = HITBOXES[hotspot.id]
   hitAreas.push({
+    kind: "hotspot",
     id: hotspot.id,
     x: point.px + hitbox.offsetX,
     y: point.py + hitbox.offsetY,
     w: hitbox.width,
     h: hitbox.height,
+    snapDistance: HOTSPOT_SNAP_DISTANCE,
   })
 }
 
-function clampTile(x: number, y: number, grid: Grid) {
-  return {
-    x: Math.max(1, Math.min(grid.cols - 2, x)),
-    y: Math.max(1, Math.min(grid.rows - 2, y)),
-  }
+function pushDogHitArea(hitAreas: HitTarget[], point: { px: number; py: number }) {
+  hitAreas.push({
+    kind: "dog",
+    id: "dog",
+    x: point.px - 18,
+    y: point.py - 34,
+    w: 36,
+    h: 28,
+    snapDistance: DOG_SNAP_DISTANCE,
+  })
 }
 
-function isWalkable(tile: TilePoint, grid: Grid) {
-  return grid.walkable[idx(tile.x, tile.y, grid.cols)]
-}
-
-function distanceToHitArea(px: number, py: number, area: HitArea) {
+function distanceToHitArea(px: number, py: number, area: HitTarget) {
   const dx = Math.max(area.x - px, 0, px - (area.x + area.w))
   const dy = Math.max(area.y - py, 0, py - (area.y + area.h))
   return Math.hypot(dx, dy)
 }
 
-function findNearestWalkableTile(target: TilePoint, grid: Grid) {
-  const start = clampTile(target.x, target.y, grid)
-  if (isWalkable(start, grid)) return start
-
-  const queue: TilePoint[] = [start]
-  const visited = new Set<string>([`${start.x},${start.y}`])
-
-  while (queue.length) {
-    const current = queue.shift()
-    if (!current) break
-
-    const neighbors: TilePoint[] = [
-      { x: current.x + 1, y: current.y },
-      { x: current.x - 1, y: current.y },
-      { x: current.x, y: current.y + 1 },
-      { x: current.x, y: current.y - 1 },
-    ]
-
-    for (const neighbor of neighbors) {
-      if (neighbor.x < 1 || neighbor.y < 1 || neighbor.x > grid.cols - 2 || neighbor.y > grid.rows - 2) continue
-      const key = `${neighbor.x},${neighbor.y}`
-      if (visited.has(key)) continue
-      if (isWalkable(neighbor, grid)) return neighbor
-      visited.add(key)
-      queue.push(neighbor)
-    }
-  }
-
-  return start
+function hitPriority(area: HitTarget) {
+  return area.kind === "dog" ? 0 : 1
 }
 
 export default function PersonalRoom({
@@ -214,15 +143,19 @@ export default function PersonalRoom({
   inspectFlash,
   audioEnabled,
   avatarVisualRef,
+  dogVisualRef,
+  dogState,
   onMoveToTile,
   onInteractHotspot,
+  onInteractDog,
   onHoverHotspot,
   onToggleAudio,
   tick,
+  tickDog,
 }: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null)
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
-  const hitAreasRef = useRef<HitArea[]>([])
+  const hitAreasRef = useRef<HitTarget[]>([])
   const hoverRef = useRef<SectionSlug | null>(hoverHotspotId)
   const pendingPointerRef = useRef<PendingPointer | null>(null)
   const sceneReadyRef = useRef(false)
@@ -233,11 +166,12 @@ export default function PersonalRoom({
     inspectFlash,
     modalOpen,
     activeSection,
+    dogState,
   })
 
   const [size, setSize] = useState({ width: 640, height: 780 })
   const [sceneReady, setSceneReady] = useState(false)
-  const grid = useMemo(() => buildGrid(hotspots), [hotspots])
+  const grid = useMemo(() => buildRoomGrid(hotspots), [hotspots])
   const hotspotMap = useMemo(() => new Map(hotspots.map((hotspot) => [hotspot.id, hotspot])), [hotspots])
   const isInteractionEnabled = interactionReady && sceneReady
 
@@ -249,9 +183,10 @@ export default function PersonalRoom({
       inspectFlash,
       modalOpen,
       activeSection,
+      dogState,
     }
     hoverRef.current = hoverHotspotId
-  }, [activeSection, bubble, hoverHotspotId, inspectFlash, linkedHotspotId, modalOpen])
+  }, [activeSection, bubble, dogState, hoverHotspotId, inspectFlash, linkedHotspotId, modalOpen])
 
   useEffect(() => {
     if (!isInteractionEnabled || modalOpen) return
@@ -284,14 +219,24 @@ export default function PersonalRoom({
     const rect = canvas.getBoundingClientRect()
     const px = clientX - rect.left
     const py = clientY - rect.top
-    const hit =
-      hitAreasRef.current.find((area) => px >= area.x && px <= area.x + area.w && py >= area.y && py <= area.y + area.h) ??
-      hitAreasRef.current
-        .map((area) => ({ area, distance: distanceToHitArea(px, py, area) }))
-        .filter((candidate) => candidate.distance <= HOTSPOT_SNAP_DISTANCE)
-        .sort((left, right) => left.distance - right.distance)[0]?.area
 
-    return { px, py, hit }
+    const insideHits = hitAreasRef.current
+      .filter((area) => px >= area.x && px <= area.x + area.w && py >= area.y && py <= area.y + area.h)
+      .sort((left, right) => hitPriority(left) - hitPriority(right))
+
+    if (insideHits.length) {
+      return { px, py, hit: insideHits[0] }
+    }
+
+    const snappedHits = hitAreasRef.current
+      .map((area) => ({ area, distance: distanceToHitArea(px, py, area) }))
+      .filter((candidate) => candidate.distance <= candidate.area.snapDistance)
+      .sort((left, right) => {
+        const priorityDelta = hitPriority(left.area) - hitPriority(right.area)
+        return priorityDelta !== 0 ? priorityDelta : left.distance - right.distance
+      })
+
+    return { px, py, hit: snappedHits[0]?.area ?? null }
   }, [])
 
   const updateHover = useCallback(
@@ -311,8 +256,13 @@ export default function PersonalRoom({
       const result = handlePointerAt(clientX, clientY)
       if (!result) return
 
-      if (result.hit) {
-        void onInteractHotspot(result.hit.id)
+      if (result.hit?.kind === "dog") {
+        onInteractDog()
+        return
+      }
+
+      if (result.hit?.kind === "hotspot") {
+        void onInteractHotspot(result.hit.id as SectionSlug)
         return
       }
 
@@ -327,7 +277,7 @@ export default function PersonalRoom({
       const nextTile = findNearestWalkableTile({ x: tile.tx, y: tile.ty }, grid)
       void onMoveToTile(nextTile)
     },
-    [grid, handlePointerAt, onInteractHotspot, onMoveToTile, size.height, size.width]
+    [grid, handlePointerAt, onInteractDog, onInteractHotspot, onMoveToTile, size.height, size.width]
   )
 
   useEffect(() => {
@@ -354,7 +304,7 @@ export default function PersonalRoom({
       }
 
       const result = handlePointerAt(event.clientX, event.clientY)
-      updateHover(result?.hit?.id ?? null)
+      updateHover(result?.hit?.kind === "hotspot" ? (result.hit.id as SectionSlug) : null)
     },
     [handlePointerAt, isInteractionEnabled, updateHover]
   )
@@ -397,6 +347,7 @@ export default function PersonalRoom({
       lastTime = now
 
       const avatarForDraw = tick(dt) || avatarVisualRef.current || currentTile
+      const dogForDraw = tickDog(dt) || dogVisualRef.current || dogState.currentTile
       const dpr = window.devicePixelRatio || 1
 
       if (canvas.width !== Math.floor(size.width * dpr) || canvas.height !== Math.floor(size.height * dpr)) {
@@ -463,13 +414,17 @@ export default function PersonalRoom({
       scene.push({ sort: 4.4, draw: () => drawArmchair(sceneContext) })
       scene.push({ sort: 4.6, draw: () => drawLamp(sceneContext) })
       scene.push({
+        sort: dogForDraw.y + 0.45,
+        draw: () => drawDog(sceneContext, dogForDraw, currentScene.dogState.animation, hitAreasRef.current),
+      })
+      scene.push({
         sort: avatarForDraw.y + 0.5,
         draw: () => drawAvatar(sceneContext, avatarForDraw, currentTile.x !== avatarForDraw.x || currentTile.y !== avatarForDraw.y),
       })
 
       scene.sort((a, b) => a.sort - b.sort).forEach((item) => item.draw())
 
-      if (!sceneReadyRef.current && size.width > 0 && size.height > 0 && hitAreasRef.current.length >= hotspots.length) {
+      if (!sceneReadyRef.current && size.width > 0 && size.height > 0 && hitAreasRef.current.length >= hotspots.length + 1) {
         sceneReadyRef.current = true
         setSceneReady(true)
       }
@@ -477,6 +432,11 @@ export default function PersonalRoom({
       if (currentScene.bubble && currentScene.bubble.expiresAt > Date.now()) {
         const avatarPoint = projectIso(avatarForDraw.x, avatarForDraw.y, params)
         drawBubble(ctx, avatarPoint.px, avatarPoint.py - 26, currentScene.bubble.text)
+      }
+
+      if (currentScene.dogState.bubble) {
+        const dogPoint = projectIso(dogForDraw.x, dogForDraw.y, params)
+        drawBubble(ctx, dogPoint.px, dogPoint.py - 24, currentScene.dogState.bubble.text)
       }
 
       const hudTargetId = currentScene.hoverHotspotId ?? currentScene.linkedHotspotId
@@ -502,7 +462,7 @@ export default function PersonalRoom({
 
     frame = requestAnimationFrame(render)
     return () => cancelAnimationFrame(frame)
-  }, [currentTile.x, currentTile.y, grid, hotspotMap, hotspots, size.height, size.width, tick])
+  }, [avatarVisualRef, currentTile.x, currentTile.y, dogState.currentTile, dogVisualRef, grid, hotspotMap, hotspots, size.height, size.width, tick, tickDog])
 
   return (
     <div ref={focusRef} tabIndex={0} className="relative outline-none">
@@ -512,7 +472,7 @@ export default function PersonalRoom({
             房间交互
           </div>
           <div className="mt-2 text-sm text-[rgba(255,245,220,0.92)]">
-            点击或触摸房间物件，角色会先走过去，再打开对应的冒险日志窗。
+            点击或触摸房间物件，角色会先走过去，再打开对应的冒险日志窗。柴犬会自己在房间里活泼地跑来跑去。
           </div>
         </div>
 
@@ -553,7 +513,9 @@ export default function PersonalRoom({
           <div className="pointer-events-none absolute inset-0 grid place-items-center bg-[linear-gradient(180deg,rgba(12,10,8,0.15),rgba(12,10,8,0.38))]">
             <div className="pixel-panel max-w-xs text-center">
               <div className="font-display text-[11px] uppercase tracking-[0.35em] text-[color:var(--game-muted)]">房间加载中</div>
-              <p className="mt-3 text-sm leading-7 text-[color:var(--game-text)]">正在同步角色位置和房间状态，马上就可以直接点击地板或物件了。</p>
+              <p className="mt-3 text-sm leading-7 text-[color:var(--game-text)]">
+                正在同步角色位置和房间状态，马上就可以直接点击地板、家具和柴犬了。
+              </p>
             </div>
           </div>
         )}
@@ -590,11 +552,11 @@ function drawBackground(ctx: CanvasRenderingContext2D, width: number, height: nu
   }
 }
 
-function drawFloor(ctx: CanvasRenderingContext2D, grid: Grid, params: IsoProjectParams, tileW: number, tileH: number) {
+function drawFloor(ctx: CanvasRenderingContext2D, grid: RoomGrid, params: IsoProjectParams, tileW: number, tileH: number) {
   for (let y = 0; y < grid.rows; y += 1) {
     for (let x = 0; x < grid.cols; x += 1) {
       const point = projectIso(x, y, params)
-      const isEdge = !grid.walkable[idx(x, y, grid.cols)]
+      const isEdge = !grid.walkable[roomGridIndex(x, y, grid.cols)]
       const isEven = (x + y) % 2 === 0
       const fill = isEdge ? "#6d665d" : isEven ? "#b7945e" : "#a78250"
       drawTile(ctx, point.px, point.py, tileW, tileH, fill, "#241914")
@@ -602,7 +564,7 @@ function drawFloor(ctx: CanvasRenderingContext2D, grid: Grid, params: IsoProject
   }
 }
 
-function drawWalls(ctx: CanvasRenderingContext2D, grid: Grid, params: IsoProjectParams, tileW: number, tileH: number) {
+function drawWalls(ctx: CanvasRenderingContext2D, grid: RoomGrid, params: IsoProjectParams, tileW: number, tileH: number) {
   for (let x = 1; x < grid.cols - 1; x += 1) {
     const point = projectIso(x, 1, params)
     drawRaisedBlock(ctx, point.px, point.py, tileW, tileH, "#cbb28b", "#6d5236")
@@ -614,7 +576,7 @@ function drawWalls(ctx: CanvasRenderingContext2D, grid: Grid, params: IsoProject
   }
 }
 
-function drawDesk(context: SceneContext, hotspot: RoomHotspot | undefined, mode: "idle" | "hover" | "active", hitAreas: HitArea[]) {
+function drawDesk(context: SceneContext, hotspot: RoomHotspot | undefined, mode: "idle" | "hover" | "active", hitAreas: HitTarget[]) {
   const { ctx, params, time } = context
   const point = projectIso(13.5, 3.9, params)
   drawObjectPulse(ctx, point.px + 2, point.py - 26, 52, hotspot?.accent ?? "#67f0ba", mode)
@@ -627,7 +589,7 @@ function drawDesk(context: SceneContext, hotspot: RoomHotspot | undefined, mode:
   circle(ctx, point.px - 28, point.py - 16, 8, "#8d6d48")
   rect(ctx, point.px - 34, point.py - 14, 10, 4, "#7f694b")
   rect(ctx, point.px + 28, point.py - 10, 16, 6, "#2c2522")
-  pushHitArea(hitAreas, hotspot, point)
+  pushHotspotHitArea(hitAreas, hotspot, point)
 
   for (let index = 0; index < 4; index += 1) {
     const y = point.py - 46 + index * 5
@@ -639,7 +601,7 @@ function drawDesk(context: SceneContext, hotspot: RoomHotspot | undefined, mode:
   }
 }
 
-function drawBookshelf(context: SceneContext, hotspot: RoomHotspot | undefined, mode: "idle" | "hover" | "active", hitAreas: HitArea[]) {
+function drawBookshelf(context: SceneContext, hotspot: RoomHotspot | undefined, mode: "idle" | "hover" | "active", hitAreas: HitTarget[]) {
   const { ctx, params } = context
   const point = projectIso(1.3, 7.2, params)
   drawObjectPulse(ctx, point.px - 18, point.py - 36, 44, hotspot?.accent ?? "#d2ad6d", mode)
@@ -649,14 +611,14 @@ function drawBookshelf(context: SceneContext, hotspot: RoomHotspot | undefined, 
   rect(ctx, point.px - 25, point.py - 36, 17, 8, "#5a88b6")
   rect(ctx, point.px - 20, point.py - 22, 12, 8, "#78a35d")
   rect(ctx, point.px - 28, point.py - 8, 20, 6, mode === "active" ? "#ffe8a5" : mode === "hover" ? "#f7d89a" : "#ceb177")
-  pushHitArea(hitAreas, hotspot, point)
+  pushHotspotHitArea(hitAreas, hotspot, point)
 
   if (mode === "active") {
     drawBeacon(ctx, point.px - 18, point.py - 82, hotspot?.accent ?? "#d2ad6d")
   }
 }
 
-function drawWindow(context: SceneContext, hotspot: RoomHotspot | undefined, mode: "idle" | "hover" | "active", hitAreas: HitArea[]) {
+function drawWindow(context: SceneContext, hotspot: RoomHotspot | undefined, mode: "idle" | "hover" | "active", hitAreas: HitTarget[]) {
   const { ctx, params, time } = context
   const point = projectIso(9.2, 1.2, params)
   drawObjectPulse(ctx, point.px, point.py - 64, 58, hotspot?.accent ?? "#9bd0ff", mode)
@@ -672,14 +634,14 @@ function drawWindow(context: SceneContext, hotspot: RoomHotspot | undefined, mod
   ctx.fillStyle = "rgba(255, 255, 255, 0.2)"
   ctx.fillRect(point.px - 26 + Math.sin(time * 0.7) * 3, point.py - 74, 20, 8)
   ctx.fillRect(point.px + 6 + Math.cos(time * 0.6) * 2, point.py - 69, 16, 6)
-  pushHitArea(hitAreas, hotspot, point)
+  pushHotspotHitArea(hitAreas, hotspot, point)
 
   if (mode === "active") {
     drawBeacon(ctx, point.px, point.py - 98, hotspot?.accent ?? "#9bd0ff")
   }
 }
 
-function drawBike(context: SceneContext, hotspot: RoomHotspot | undefined, mode: "idle" | "hover" | "active", hitAreas: HitArea[]) {
+function drawBike(context: SceneContext, hotspot: RoomHotspot | undefined, mode: "idle" | "hover" | "active", hitAreas: HitTarget[]) {
   const { ctx, params } = context
   const point = projectIso(3.9, 12.2, params)
   drawObjectPulse(ctx, point.px - 2, point.py - 16, 46, hotspot?.accent ?? "#f7c56f", mode)
@@ -693,14 +655,14 @@ function drawBike(context: SceneContext, hotspot: RoomHotspot | undefined, mode:
   line(ctx, point.px + 6, point.py - 8, point.px - 4, point.py - 28, mode === "active" ? "#ffd58c" : mode === "hover" ? "#f7c56f" : "#d2a553", 4)
   line(ctx, point.px - 2, point.py - 30, point.px + 8, point.py - 34, "#352724", 3)
   line(ctx, point.px + 4, point.py - 28, point.px + 16, point.py - 34, "#352724", 3)
-  pushHitArea(hitAreas, hotspot, point)
+  pushHotspotHitArea(hitAreas, hotspot, point)
 
   if (mode === "active") {
     drawBeacon(ctx, point.px, point.py - 48, hotspot?.accent ?? "#f7c56f")
   }
 }
 
-function drawRecordPlayer(context: SceneContext, hotspot: RoomHotspot | undefined, mode: "idle" | "hover" | "active", hitAreas: HitArea[]) {
+function drawRecordPlayer(context: SceneContext, hotspot: RoomHotspot | undefined, mode: "idle" | "hover" | "active", hitAreas: HitTarget[]) {
   const { ctx, params, time } = context
   const point = projectIso(15.1, 12.7, params)
   drawObjectPulse(ctx, point.px - 3, point.py - 18, 40, hotspot?.accent ?? "#ff8fb1", mode)
@@ -714,7 +676,7 @@ function drawRecordPlayer(context: SceneContext, hotspot: RoomHotspot | undefine
     circle(ctx, point.px + 16 + index * 9, point.py - 38 - Math.sin(time * 3 + index) * 5, 3, "#ffb2ca")
   }
 
-  pushHitArea(hitAreas, hotspot, point)
+  pushHotspotHitArea(hitAreas, hotspot, point)
 
   if (mode === "active") {
     drawBeacon(ctx, point.px - 2, point.py - 52, hotspot?.accent ?? "#ff8fb1")
@@ -798,6 +760,52 @@ function drawAvatar(context: SceneContext, avatar: RoomAvatarState, moving: bool
   ctx.stroke()
 }
 
+function drawDog(context: SceneContext, dog: RoomAvatarState, animation: DogAnimationState, hitAreas: HitTarget[]) {
+  const { ctx, params, tileH, time } = context
+  const point = projectIso(dog.x, dog.y, params)
+  const runFrame = Math.floor(time * 10) % 2
+  const idleFrame = Math.floor(time * 4) % 2
+  const wagFrame = Math.floor(time * 18) % 2
+  const bob = animation.moving ? (runFrame === 0 ? -1.5 : 1.2) : idleFrame === 0 ? 0 : -0.8
+  const earLift = animation.moving ? 0 : idleFrame === 0 ? 0 : 1
+  const tailShift = animation.wagging ? (wagFrame === 0 ? -2 : 2) : 0
+  const legLift = animation.moving ? (runFrame === 0 ? 0 : 2) : 0
+  const facingLeft = dog.facing === "W"
+
+  pushDogHitArea(hitAreas, point)
+
+  ctx.fillStyle = "rgba(0, 0, 0, 0.16)"
+  ctx.beginPath()
+  ctx.ellipse(point.px, point.py + tileH * 0.62, 14, 7, 0, 0, Math.PI * 2)
+  ctx.fill()
+
+  ctx.save()
+  ctx.translate(point.px, point.py - 4 + bob)
+  if (facingLeft) {
+    ctx.scale(-1, 1)
+  }
+
+  rect(ctx, -15 + tailShift, -18, 4, 10, "#d98b34")
+  rect(ctx, -17 + tailShift, -20, 3, 4, "#f4efe8")
+
+  rect(ctx, -10, -18, 24, 12, "#d98b34")
+  rect(ctx, -4, -15, 11, 9, "#f7eedf")
+  rect(ctx, 10, -24, 12, 11, "#d98b34")
+  rect(ctx, 16, -20, 6, 5, "#f7eedf")
+  rect(ctx, 12, -30 + earLift, 3, 7, "#925124")
+  rect(ctx, 17, -29, 3, 6, "#925124")
+
+  rect(ctx, -7, -6 - legLift, 4, 12 + legLift, "#f7eedf")
+  rect(ctx, 1, -4, 4, 10, "#f7eedf")
+  rect(ctx, 8, -4 + legLift, 4, 10 - legLift + 2, "#f7eedf")
+  rect(ctx, 14, -6, 4, 12, "#f7eedf")
+
+  ctx.fillStyle = "#171312"
+  ctx.fillRect(18, -20, 2, 2)
+  ctx.fillRect(21, -18, 2, 2)
+  ctx.fillRect(19, -22, 2, 2)
+  ctx.restore()
+}
 function drawHudLabel(ctx: CanvasRenderingContext2D, width: number, title: string, hint: string, accent: string) {
   const panelWidth = Math.min(340, width - 32)
   const x = 16
@@ -961,3 +969,15 @@ function drawGlow(ctx: CanvasRenderingContext2D, x: number, y: number, radius: n
   ctx.arc(x, y, radius, 0, Math.PI * 2)
   ctx.fill()
 }
+
+
+
+
+
+
+
+
+
+
+
+

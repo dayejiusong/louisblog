@@ -1,8 +1,15 @@
-"use client"
+﻿"use client"
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { aStar } from "@/lib/pathfinding"
 import type { RoomHotspot, SectionSlug } from "@/lib/blog-content"
+import {
+  buildRoomGrid,
+  clampTileToInterior,
+  findNearestWalkableTile,
+  roomGridIndex,
+  type RoomPoint,
+} from "@/lib/room-grid"
 import { saveRoomAvatarState, type RoomAvatarState } from "@/lib/room-session"
 
 export type BubbleState = {
@@ -18,13 +25,8 @@ export type RoomControllerState = {
   inspectFlash: boolean
 }
 
-type PathNode = {
-  x: number
-  y: number
-}
-
 type PathState = {
-  nodes: PathNode[]
+  nodes: RoomPoint[]
   progress: number
 }
 
@@ -38,17 +40,7 @@ type Options = {
   onPlaySound: (event: "hover" | "confirm" | "blocked" | "open") => void
 }
 
-const ROOM_COLS = 20
-const ROOM_ROWS = 16
 const SPEED = 3.6
-
-function idx(x: number, y: number, cols: number) {
-  return y * cols + x
-}
-
-function clamp(value: number, min: number, max: number) {
-  return Math.max(min, Math.min(max, value))
-}
 
 function roundAvatar(state: RoomAvatarState) {
   return {
@@ -56,77 +48,6 @@ function roundAvatar(state: RoomAvatarState) {
     y: Math.round(state.y),
     facing: state.facing,
   }
-}
-
-function buildWalkable(hotspots: RoomHotspot[]) {
-  const walkable = new Array(ROOM_COLS * ROOM_ROWS).fill(true)
-  const block = (x: number, y: number) => {
-    if (x >= 0 && y >= 0 && x < ROOM_COLS && y < ROOM_ROWS) {
-      walkable[idx(x, y, ROOM_COLS)] = false
-    }
-  }
-
-  for (let x = 0; x < ROOM_COLS; x += 1) {
-    block(x, 0)
-    block(x, ROOM_ROWS - 1)
-  }
-
-  for (let y = 0; y < ROOM_ROWS; y += 1) {
-    block(0, y)
-    block(ROOM_COLS - 1, y)
-  }
-
-  hotspots.forEach((hotspot) => {
-    hotspot.footprint.forEach((tile) => block(tile.x, tile.y))
-  })
-
-  ;[
-    [6, 11],
-    [7, 11],
-    [8, 11],
-    [11, 10],
-    [12, 10],
-    [16, 4],
-  ].forEach(([x, y]) => block(x, y))
-
-  return walkable
-}
-
-function findNearestWalkableNode(target: PathNode, walkable: boolean[]) {
-  const start = {
-    x: clamp(Math.round(target.x), 1, ROOM_COLS - 2),
-    y: clamp(Math.round(target.y), 1, ROOM_ROWS - 2),
-  }
-
-  if (walkable[idx(start.x, start.y, ROOM_COLS)]) {
-    return start
-  }
-
-  const queue: PathNode[] = [start]
-  const visited = new Set<string>([`${start.x},${start.y}`])
-
-  while (queue.length) {
-    const current = queue.shift()
-    if (!current) break
-
-    for (const [nx, ny] of [
-      [current.x + 1, current.y],
-      [current.x - 1, current.y],
-      [current.x, current.y + 1],
-      [current.x, current.y - 1],
-    ]) {
-      if (nx < 1 || ny < 1 || nx > ROOM_COLS - 2 || ny > ROOM_ROWS - 2) continue
-      const key = `${nx},${ny}`
-      if (visited.has(key)) continue
-      if (walkable[idx(nx, ny, ROOM_COLS)]) {
-        return { x: nx, y: ny }
-      }
-      visited.add(key)
-      queue.push({ x: nx, y: ny })
-    }
-  }
-
-  return start
 }
 
 export function useRoomController({
@@ -143,16 +64,16 @@ export function useRoomController({
   const [bubble, setBubble] = useState<BubbleState | null>(null)
   const [inspectFlash, setInspectFlash] = useState(false)
 
-  const walkable = useMemo(() => buildWalkable(hotspots), [hotspots])
+  const grid = useMemo(() => buildRoomGrid(hotspots), [hotspots])
   const hotspotMap = useMemo(() => new Map(hotspots.map((hotspot) => [hotspot.id, hotspot])), [hotspots])
   const sanitizedInitialAvatar = useMemo(() => {
-    const nearest = findNearestWalkableNode(initialAvatar, walkable)
+    const nearest = findNearestWalkableTile(initialAvatar, grid)
     return {
       x: nearest.x,
       y: nearest.y,
       facing: initialAvatar.facing,
     } satisfies RoomAvatarState
-  }, [initialAvatar, walkable])
+  }, [grid, initialAvatar])
 
   const avatarVisualRef = useRef<RoomAvatarState>(initialAvatar)
   const pathRef = useRef<PathState | null>(null)
@@ -200,17 +121,14 @@ export function useRoomController({
   )
 
   const queueMove = useCallback(
-    async (target: PathNode, hotspot?: RoomHotspot | null) => {
+    async (target: RoomPoint, hotspot?: RoomHotspot | null) => {
       if (modalOpen || inspectFlash) return
 
       void onPrimeAudio().catch(() => undefined)
       const start = roundAvatar(avatarVisualRef.current)
-      const goal = {
-        x: clamp(target.x, 1, ROOM_COLS - 2),
-        y: clamp(target.y, 1, ROOM_ROWS - 2),
-      }
+      const goal = clampTileToInterior(target, grid)
 
-      if (!walkable[idx(goal.x, goal.y, ROOM_COLS)]) {
+      if (!grid.walkable[roomGridIndex(goal.x, goal.y, grid.cols)]) {
         if (hotspot) {
           onPlaySound("blocked")
           showBubble("这里被家具挡住了。")
@@ -218,7 +136,7 @@ export function useRoomController({
         return
       }
 
-      const path = aStar(start, goal, ROOM_COLS, ROOM_ROWS, (x, y) => walkable[idx(x, y, ROOM_COLS)])
+      const path = aStar(start, goal, grid.cols, grid.rows, (x, y) => grid.walkable[roomGridIndex(x, y, grid.cols)])
       if (path.length <= 1) {
         if (hotspot) {
           onPlaySound("blocked")
@@ -242,11 +160,11 @@ export function useRoomController({
         facing: Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? "E" : "W") : dy > 0 ? "S" : "N",
       }
     },
-    [inspectFlash, modalOpen, onPlaySound, onPrimeAudio, showBubble, walkable]
+    [grid, inspectFlash, modalOpen, onPlaySound, onPrimeAudio, showBubble]
   )
 
   const queueGroundMove = useCallback(
-    async (target: PathNode) => {
+    async (target: RoomPoint) => {
       await queueMove(target, null)
     },
     [queueMove]
@@ -317,7 +235,7 @@ export function useRoomController({
       }
       return avatarVisualRef.current
     },
-    [onOpenSection, onPlaySound]
+    [onOpenSection]
   )
 
   const linkedHotspotId = activeSection ?? pendingHotspotRef.current?.id ?? hoverHotspotId
@@ -331,6 +249,7 @@ export function useRoomController({
       inspectFlash,
     } satisfies RoomControllerState,
     avatarVisualRef,
+    grid,
     queueGroundMove,
     queueHotspot,
     updateHoverHotspot,

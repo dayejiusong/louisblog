@@ -1,9 +1,10 @@
-"use client"
+﻿"use client"
 
 import { useCallback, useEffect, useRef, useState } from "react"
 import ArchiveModal from "@/components/archive-modal"
 import PersonalRoom from "@/components/personal-room"
 import { useArchiveModal } from "@/hooks/use-archive-modal"
+import { useDogNpc } from "@/hooks/use-dog-npc"
 import { usePixelAudio } from "@/hooks/use-pixel-audio"
 import { useRoomController } from "@/hooks/use-room-controller"
 import { blogSections, roomHotspots, sectionList, type SectionSlug } from "@/lib/blog-content"
@@ -41,6 +42,12 @@ export default function Page() {
     onOpenSection: openSectionFromRoom,
     onPrimeAudio: audio.prime,
     onPlaySound: audio.playSound,
+  })
+
+  const dog = useDogNpc({
+    grid: room.grid,
+    modalOpen: modal.phase !== "closed",
+    inspectFlash: room.state.inspectFlash,
   })
 
   useEffect(() => {
@@ -117,11 +124,15 @@ export default function Page() {
               inspectFlash={room.state.inspectFlash}
               audioEnabled={audio.enabled}
               avatarVisualRef={room.avatarVisualRef}
+              dogVisualRef={dog.dogVisualRef}
+              dogState={dog.dogState}
               onMoveToTile={room.queueGroundMove}
               onInteractHotspot={room.queueHotspot}
+              onInteractDog={dog.onInteractDog}
               onHoverHotspot={room.updateHoverHotspot}
               onToggleAudio={audio.toggleEnabled}
               tick={room.tick}
+              tickDog={dog.tickDog}
             />
           </div>
         </section>
@@ -132,6 +143,7 @@ export default function Page() {
             <div className="mt-4 grid gap-3 text-sm leading-7 text-[color:var(--game-text)]">
               <p>点击地面：角色只会移动，不会打开内容。</p>
               <p>点击物件：角色先走到交互点，再弹出对应的冒险日志窗。</p>
+              <p>点击柴犬：会摇尾巴并冒出“汪！”，但不会打断其他房间交互。</p>
               <p>按下 Esc 或点右上角关闭：会回到房间继续逛，不会离开首页。</p>
             </div>
           </div>
