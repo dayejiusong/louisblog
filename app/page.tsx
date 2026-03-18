@@ -82,34 +82,6 @@ export default function Page() {
     <main className="min-h-screen px-4 py-4 sm:px-6 sm:py-6 lg:px-10">
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-5">
         <section className="pixel-frame overflow-hidden">
-          <div className="grid gap-4 border-b-4 border-[color:var(--game-ink)] bg-[linear-gradient(180deg,rgba(255,242,210,0.3),rgba(34,26,22,0.06))] px-4 py-4 sm:px-6 lg:grid-cols-[1fr_auto] lg:items-end">
-            <div>
-              <div className="font-display text-[11px] uppercase tracking-[0.35em] text-[color:var(--game-muted)] sm:text-xs">
-                Louis 房间 / 个人博客
-              </div>
-              <h1 className="mt-3 text-3xl font-black leading-tight text-[color:var(--game-text)] sm:text-5xl lg:text-6xl">
-                走进房间，点开我的游戏、骑行、旅行、书架和唱片。
-              </h1>
-              <p className="mt-4 max-w-3xl text-sm leading-7 text-[color:var(--game-subtle)] sm:text-base">
-                这是一个可点击、可漫游的像素 RPG 风格个人博客。桌面端用鼠标点击，移动端用手指点按；角色会先走过去，再在房间里打开对应的冒险日志窗。
-              </p>
-            </div>
-
-            <div className="pixel-panel max-w-sm">
-              <div className="font-display text-xs uppercase tracking-[0.3em] text-[color:var(--game-muted)]">
-                房间物件
-              </div>
-              <div className="mt-3 grid gap-2 text-sm text-[color:var(--game-text)]">
-                {roomHotspots.map((hotspot) => (
-                  <div key={hotspot.id} className="rounded-sm border-2 border-[color:var(--game-ink)] bg-[rgba(255,255,255,0.38)] px-3 py-2">
-                    <div className="font-semibold">{hotspot.label}</div>
-                    <div className="mt-1 text-xs leading-6 text-[color:var(--game-muted)]">{hotspot.hint}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
           <div className="px-3 py-3 sm:px-4 sm:py-4">
             <PersonalRoom
               focusRef={roomFocusRef}
