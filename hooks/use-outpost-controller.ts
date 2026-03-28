@@ -1,30 +1,22 @@
-﻿"use client"
+"use client"
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { aStar } from "@/lib/pathfinding"
-import type { RoomHotspot, SectionSlug } from "@/lib/blog-content"
-import {
-  buildRoomGrid,
-  clampTileToInterior,
-  findNearestWalkableTile,
-  roomGridIndex,
-  type RoomPoint,
-} from "@/lib/room-grid"
-import { saveRoomAvatarState, type RoomAvatarState } from "@/lib/room-session"
+import { buildOutpostGrid } from "@/lib/outpost-grid"
+import { clampTileToInterior, findNearestWalkableTile, roomGridIndex, type RoomPoint } from "@/lib/room-grid"
+import { saveOutpostAvatarState, type RoomAvatarState } from "@/lib/room-session"
 
-export type BubbleState = {
+export type OutpostBubbleState = {
   text: string
   expiresAt: number
 }
 
-export type RoomControllerState = {
+export type OutpostControllerState = {
   currentTile: RoomAvatarState
-  hoverHotspotId: SectionSlug | null
-  linkedHotspotId: SectionSlug | null
-  hoverExit: boolean
-  linkedExit: boolean
-  bubble: BubbleState | null
-  inspectFlash: boolean
+  hoverReturn: boolean
+  linkedReturn: boolean
+  bubble: OutpostBubbleState | null
+  transitionFlash: boolean
   isMoving: boolean
 }
 
@@ -33,24 +25,18 @@ type PathState = {
   progress: number
 }
 
-type PendingAction =
-  | { kind: "hotspot"; hotspot: RoomHotspot }
-  | { kind: "departure" }
-  | null
+type PendingAction = "return" | null
 
 type Options = {
   initialAvatar: RoomAvatarState
-  hotspots: RoomHotspot[]
-  exitTile: RoomPoint
-  modalOpen: boolean
-  activeSection: SectionSlug | null
-  onOpenSection: (slug: SectionSlug) => void
-  onDepart: () => void
+  returnTile: RoomPoint
+  locked: boolean
+  onReturn: () => void
   onPrimeAudio: () => Promise<void>
   onPlaySound: (event: "hover" | "confirm" | "blocked" | "open") => void
 }
 
-const SPEED = 3.6
+const SPEED = 3.8
 
 function roundAvatar(state: RoomAvatarState) {
   return {
@@ -60,26 +46,21 @@ function roundAvatar(state: RoomAvatarState) {
   }
 }
 
-export function useRoomController({
+export function useOutpostController({
   initialAvatar,
-  hotspots,
-  exitTile,
-  modalOpen,
-  activeSection,
-  onOpenSection,
-  onDepart,
+  returnTile,
+  locked,
+  onReturn,
   onPrimeAudio,
   onPlaySound,
 }: Options) {
   const [currentTile, setCurrentTile] = useState(initialAvatar)
-  const [hoverHotspotId, setHoverHotspotId] = useState<SectionSlug | null>(null)
-  const [hoverExit, setHoverExit] = useState(false)
-  const [bubble, setBubble] = useState<BubbleState | null>(null)
-  const [inspectFlash, setInspectFlash] = useState(false)
+  const [hoverReturn, setHoverReturn] = useState(false)
+  const [bubble, setBubble] = useState<OutpostBubbleState | null>(null)
+  const [transitionFlash, setTransitionFlash] = useState(false)
   const [isMoving, setIsMoving] = useState(false)
 
-  const grid = useMemo(() => buildRoomGrid(hotspots), [hotspots])
-  const hotspotMap = useMemo(() => new Map(hotspots.map((hotspot) => [hotspot.id, hotspot])), [hotspots])
+  const grid = useMemo(() => buildOutpostGrid(), [])
   const sanitizedInitialAvatar = useMemo(() => {
     const nearest = findNearestWalkableTile(initialAvatar, grid)
     return {
@@ -92,8 +73,8 @@ export function useRoomController({
   const avatarVisualRef = useRef<RoomAvatarState>(initialAvatar)
   const pathRef = useRef<PathState | null>(null)
   const pendingActionRef = useRef<PendingAction>(null)
-  const bubbleRef = useRef<BubbleState | null>(null)
-  const openTimerRef = useRef<number | null>(null)
+  const bubbleRef = useRef<OutpostBubbleState | null>(null)
+  const flashTimerRef = useRef<number | null>(null)
   const hasQueuedInteractionRef = useRef(false)
 
   useEffect(() => {
@@ -111,8 +92,8 @@ export function useRoomController({
 
   useEffect(() => {
     return () => {
-      if (openTimerRef.current) {
-        window.clearTimeout(openTimerRef.current)
+      if (flashTimerRef.current) {
+        window.clearTimeout(flashTimerRef.current)
       }
     }
   }, [])
@@ -123,21 +104,9 @@ export function useRoomController({
     setBubble(nextBubble)
   }, [])
 
-  const updateHoverHotspot = useCallback(
-    (hotspotId: SectionSlug | null) => {
-      setHoverHotspotId((current) => {
-        if (current !== hotspotId && hotspotId) {
-          onPlaySound("hover")
-        }
-        return hotspotId
-      })
-    },
-    [onPlaySound]
-  )
-
-  const updateHoverExit = useCallback(
+  const updateHoverReturn = useCallback(
     (nextHover: boolean) => {
-      setHoverExit((current) => {
+      setHoverReturn((current) => {
         if (current !== nextHover && nextHover) {
           onPlaySound("hover")
         }
@@ -148,35 +117,26 @@ export function useRoomController({
   )
 
   const queueMove = useCallback(
-    async (target: RoomPoint, action?: PendingAction) => {
-      if (modalOpen || inspectFlash) return
+    async (target: RoomPoint, action: PendingAction = null) => {
+      if (locked || transitionFlash) return
 
       void onPrimeAudio().catch(() => undefined)
       const start = roundAvatar(avatarVisualRef.current)
       const goal = clampTileToInterior(target, grid)
 
       const runImmediateAction = () => {
-        if (!action) return
-        if (action.kind === "hotspot") {
-          setInspectFlash(true)
-          openTimerRef.current = window.setTimeout(() => {
-            setInspectFlash(false)
-            onOpenSection(action.hotspot.id)
-          }, 220)
-          return
-        }
-
-        setInspectFlash(true)
-        openTimerRef.current = window.setTimeout(() => {
-          setInspectFlash(false)
-          onDepart()
+        if (action !== "return") return
+        setTransitionFlash(true)
+        flashTimerRef.current = window.setTimeout(() => {
+          setTransitionFlash(false)
+          onReturn()
         }, 260)
       }
 
       if (!grid.walkable[roomGridIndex(goal.x, goal.y, grid.cols)]) {
         if (action) {
           onPlaySound("blocked")
-          showBubble("这里被家具挡住了。")
+          showBubble("The path is blocked.")
         }
         return
       }
@@ -190,7 +150,7 @@ export function useRoomController({
       if (path.length <= 1) {
         if (action) {
           onPlaySound("blocked")
-          showBubble("暂时走不过去。")
+          showBubble("This route is not available.")
         }
         return
       }
@@ -200,7 +160,7 @@ export function useRoomController({
       }
 
       hasQueuedInteractionRef.current = true
-      pendingActionRef.current = action ?? null
+      pendingActionRef.current = action
       pathRef.current = { nodes: path, progress: 0 }
       setIsMoving(true)
       const nextNode = path[1]
@@ -211,30 +171,20 @@ export function useRoomController({
         facing: Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? "E" : "W") : dy > 0 ? "S" : "N",
       }
     },
-    [grid, inspectFlash, modalOpen, onDepart, onOpenSection, onPlaySound, onPrimeAudio, showBubble]
+    [grid, locked, onPlaySound, onPrimeAudio, onReturn, showBubble, transitionFlash]
   )
 
   const queueGroundMove = useCallback(
     async (target: RoomPoint) => {
-      await queueMove(target, null)
+      await queueMove(target)
     },
     [queueMove]
   )
 
-  const queueHotspot = useCallback(
-    async (hotspotId: SectionSlug) => {
-      const hotspot = hotspotMap.get(hotspotId)
-      if (!hotspot) return
-      showBubble(hotspot.hint, 2000)
-      await queueMove(hotspot.interactionTile, { kind: "hotspot", hotspot })
-    },
-    [hotspotMap, queueMove, showBubble]
-  )
-
-  const queueDeparture = useCallback(async () => {
-    showBubble("裂缝外传来风声。", 1800)
-    await queueMove(exitTile, { kind: "departure" })
-  }, [exitTile, queueMove, showBubble])
+  const queueReturn = useCallback(async () => {
+    showBubble("The room is still glowing behind the rift.", 1800)
+    await queueMove(returnTile, "return")
+  }, [queueMove, returnTile, showBubble])
 
   const tick = useCallback(
     (dt: number) => {
@@ -256,26 +206,16 @@ export function useRoomController({
         hasQueuedInteractionRef.current = false
         setCurrentTile(restingAvatar)
         setIsMoving(false)
-        saveRoomAvatarState(restingAvatar)
+        saveOutpostAvatarState(restingAvatar)
 
         const action = pendingActionRef.current
         pendingActionRef.current = null
 
-        if (
-          action?.kind === "hotspot" &&
-          lastNode.x === action.hotspot.interactionTile.x &&
-          lastNode.y === action.hotspot.interactionTile.y
-        ) {
-          setInspectFlash(true)
-          openTimerRef.current = window.setTimeout(() => {
-            setInspectFlash(false)
-            onOpenSection(action.hotspot.id)
-          }, 220)
-        } else if (action?.kind === "departure" && lastNode.x === exitTile.x && lastNode.y === exitTile.y) {
-          setInspectFlash(true)
-          openTimerRef.current = window.setTimeout(() => {
-            setInspectFlash(false)
-            onDepart()
+        if (action === "return" && lastNode.x === returnTile.x && lastNode.y === returnTile.y) {
+          setTransitionFlash(true)
+          flashTimerRef.current = window.setTimeout(() => {
+            setTransitionFlash(false)
+            onReturn()
           }, 260)
         }
 
@@ -292,6 +232,7 @@ export function useRoomController({
         setIsMoving(false)
         return avatarVisualRef.current
       }
+
       const t = path.progress - segmentIndex
       const dx = endNode.x - startNode.x
       const dy = endNode.y - startNode.y
@@ -302,31 +243,25 @@ export function useRoomController({
       }
       return avatarVisualRef.current
     },
-    [exitTile.x, exitTile.y, onDepart, onOpenSection]
+    [onReturn, returnTile.x, returnTile.y]
   )
 
-  const linkedHotspotId =
-    activeSection ?? (pendingActionRef.current?.kind === "hotspot" ? pendingActionRef.current.hotspot.id : null) ?? hoverHotspotId
-  const linkedExit = pendingActionRef.current?.kind === "departure" || (!activeSection && hoverExit)
+  const linkedReturn = pendingActionRef.current === "return" || hoverReturn
 
   return {
     state: {
       currentTile,
-      hoverHotspotId,
-      linkedHotspotId,
-      hoverExit,
-      linkedExit,
+      hoverReturn,
+      linkedReturn,
       bubble,
-      inspectFlash,
+      transitionFlash,
       isMoving,
-    } satisfies RoomControllerState,
+    } satisfies OutpostControllerState,
     avatarVisualRef,
     grid,
     queueGroundMove,
-    queueHotspot,
-    queueDeparture,
-    updateHoverHotspot,
-    updateHoverExit,
+    queueReturn,
+    updateHoverReturn,
     tick,
   }
 }

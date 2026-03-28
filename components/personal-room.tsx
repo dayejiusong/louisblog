@@ -5,12 +5,14 @@ import { projectIso, unprojectIso, type IsoProjectParams } from "@/lib/iso"
 import type { RoomHotspot, SectionSlug } from "@/lib/blog-content"
 import type { DogAnimationState, DogNpcState } from "@/hooks/use-dog-npc"
 import type { BubbleState } from "@/hooks/use-room-controller"
+import { drawDogSprite } from "@/lib/dog-sprite"
 import { buildRoomGrid, findNearestWalkableTile, roomGridIndex, type RoomGrid } from "@/lib/room-grid"
+import { capturePointerIntent, pointerIntentWithinTolerance, resolveHitTarget, type PointerIntent } from "@/lib/scene-pointer"
 import type { RoomAvatarState } from "@/lib/room-session"
 
 type HitTarget = {
-  kind: "hotspot" | "dog"
-  id: SectionSlug | "dog"
+  kind: "hotspot" | "dog" | "exit"
+  id: SectionSlug | "dog" | "exit"
   x: number
   y: number
   w: number
@@ -40,16 +42,24 @@ type Props = {
   currentTile: RoomAvatarState
   hoverHotspotId: SectionSlug | null
   linkedHotspotId: SectionSlug | null
+  hoverExit: boolean
+  linkedExit: boolean
   bubble: BubbleState | null
   inspectFlash: boolean
+  departureActive: boolean
+  exitLabel: string
+  exitHint: string
+  exitAccent: string
   audioEnabled: boolean
   avatarVisualRef: MutableRefObject<RoomAvatarState>
   dogVisualRef: MutableRefObject<RoomAvatarState>
   dogState: DogNpcState
   onMoveToTile: (target: { x: number; y: number }) => void | Promise<void>
   onInteractHotspot: (hotspotId: SectionSlug) => void | Promise<void>
+  onTriggerExit: () => void | Promise<void>
   onInteractDog: () => void
   onHoverHotspot: (hotspotId: SectionSlug | null) => void
+  onHoverExit: (hovered: boolean) => void
   onToggleAudio: () => void
   tick: (dt: number) => RoomAvatarState
   tickDog: (dt: number) => RoomAvatarState
@@ -57,14 +67,14 @@ type Props = {
 
 const TILE_W = 58
 const TILE_H = 29
-const HOTSPOT_SNAP_DISTANCE = 30
+const HOTSPOT_SNAP_DISTANCE = 42
 const DOG_SNAP_DISTANCE = 18
 
 const HITBOXES: Record<SectionSlug, { offsetX: number; offsetY: number; width: number; height: number }> = {
   games: { offsetX: -48, offsetY: -58, width: 96, height: 76 },
-  rides: { offsetX: -36, offsetY: -40, width: 80, height: 48 },
+  rides: { offsetX: -44, offsetY: -48, width: 92, height: 64 },
   travel: { offsetX: -44, offsetY: -90, width: 88, height: 58 },
-  books: { offsetX: -38, offsetY: -74, width: 40, height: 82 },
+  books: { offsetX: -46, offsetY: -78, width: 56, height: 92 },
   music: { offsetX: -28, offsetY: -44, width: 66, height: 54 },
 }
 
@@ -120,10 +130,16 @@ function pushDogHitArea(hitAreas: HitTarget[], point: { px: number; py: number }
   })
 }
 
-function distanceToHitArea(px: number, py: number, area: HitTarget) {
-  const dx = Math.max(area.x - px, 0, px - (area.x + area.w))
-  const dy = Math.max(area.y - py, 0, py - (area.y + area.h))
-  return Math.hypot(dx, dy)
+function pushExitHitArea(hitAreas: HitTarget[], point: { px: number; py: number }) {
+  hitAreas.push({
+    kind: "exit",
+    id: "exit",
+    x: point.px - 36,
+    y: point.py - 86,
+    w: 80,
+    h: 98,
+    snapDistance: 48,
+  })
 }
 
 function hitPriority(area: HitTarget) {
@@ -139,16 +155,24 @@ export default function PersonalRoom({
   currentTile,
   hoverHotspotId,
   linkedHotspotId,
+  hoverExit,
+  linkedExit,
   bubble,
   inspectFlash,
+  departureActive,
+  exitLabel,
+  exitHint,
+  exitAccent,
   audioEnabled,
   avatarVisualRef,
   dogVisualRef,
   dogState,
   onMoveToTile,
   onInteractHotspot,
+  onTriggerExit,
   onInteractDog,
   onHoverHotspot,
+  onHoverExit,
   onToggleAudio,
   tick,
   tickDog,
@@ -157,13 +181,18 @@ export default function PersonalRoom({
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const hitAreasRef = useRef<HitTarget[]>([])
   const hoverRef = useRef<SectionSlug | null>(hoverHotspotId)
+  const hoverExitRef = useRef(hoverExit)
   const pendingPointerRef = useRef<PendingPointer | null>(null)
+  const pointerIntentRef = useRef<PointerIntent | null>(null)
   const sceneReadyRef = useRef(false)
   const sceneStateRef = useRef({
     hoverHotspotId,
     linkedHotspotId,
+    hoverExit,
+    linkedExit,
     bubble,
     inspectFlash,
+    departureActive,
     modalOpen,
     activeSection,
     dogState,
@@ -173,25 +202,29 @@ export default function PersonalRoom({
   const [sceneReady, setSceneReady] = useState(false)
   const grid = useMemo(() => buildRoomGrid(hotspots), [hotspots])
   const hotspotMap = useMemo(() => new Map(hotspots.map((hotspot) => [hotspot.id, hotspot])), [hotspots])
-  const isInteractionEnabled = interactionReady && sceneReady
+  const isInteractionEnabled = interactionReady && sceneReady && !departureActive
 
   useEffect(() => {
     sceneStateRef.current = {
       hoverHotspotId,
       linkedHotspotId,
+      hoverExit,
+      linkedExit,
       bubble,
       inspectFlash,
+      departureActive,
       modalOpen,
       activeSection,
       dogState,
     }
     hoverRef.current = hoverHotspotId
-  }, [activeSection, bubble, dogState, hoverHotspotId, inspectFlash, linkedHotspotId, modalOpen])
+    hoverExitRef.current = hoverExit
+  }, [activeSection, bubble, departureActive, dogState, hoverExit, hoverHotspotId, inspectFlash, linkedExit, linkedHotspotId, modalOpen])
 
   useEffect(() => {
-    if (!isInteractionEnabled || modalOpen) return
+    if (!isInteractionEnabled || modalOpen || departureActive) return
     focusRef.current?.focus({ preventScroll: true })
-  }, [focusRef, isInteractionEnabled, modalOpen])
+  }, [departureActive, focusRef, isInteractionEnabled, modalOpen])
 
   useEffect(() => {
     sceneReadyRef.current = false
@@ -213,56 +246,54 @@ export default function PersonalRoom({
     return () => resizeObserver.disconnect()
   }, [])
 
-  const handlePointerAt = useCallback((clientX: number, clientY: number) => {
+  const getPointerFrame = useCallback((clientX: number, clientY: number) => {
     const canvas = canvasRef.current
     if (!canvas) return null
     const rect = canvas.getBoundingClientRect()
     const px = clientX - rect.left
     const py = clientY - rect.top
-
-    const insideHits = hitAreasRef.current
-      .filter((area) => px >= area.x && px <= area.x + area.w && py >= area.y && py <= area.y + area.h)
-      .sort((left, right) => hitPriority(left) - hitPriority(right))
-
-    if (insideHits.length) {
-      return { px, py, hit: insideHits[0] }
+    return {
+      rect,
+      px,
+      py,
+      hit: resolveHitTarget(px, py, hitAreasRef.current, hitPriority),
     }
-
-    const snappedHits = hitAreasRef.current
-      .map((area) => ({ area, distance: distanceToHitArea(px, py, area) }))
-      .filter((candidate) => candidate.distance <= candidate.area.snapDistance)
-      .sort((left, right) => {
-        const priorityDelta = hitPriority(left.area) - hitPriority(right.area)
-        return priorityDelta !== 0 ? priorityDelta : left.distance - right.distance
-      })
-
-    return { px, py, hit: snappedHits[0]?.area ?? null }
   }, [])
 
-  const updateHover = useCallback(
-    (nextHover: SectionSlug | null) => {
-      if (hoverRef.current === nextHover) return
-      hoverRef.current = nextHover
-      onHoverHotspot(nextHover)
+  const updateHoverState = useCallback(
+    (nextHover: SectionSlug | null, nextExitHover: boolean) => {
+      if (hoverRef.current !== nextHover) {
+        hoverRef.current = nextHover
+        onHoverHotspot(nextHover)
+      }
+
+      if (hoverExitRef.current !== nextExitHover) {
+        hoverExitRef.current = nextExitHover
+        onHoverExit(nextExitHover)
+      }
     },
-    [onHoverHotspot]
+    [onHoverExit, onHoverHotspot]
   )
 
   const triggerInteractionAt = useCallback(
-    (clientX: number, clientY: number) => {
+    (targetId: string | null, px: number, py: number) => {
       const currentScene = sceneStateRef.current
-      if (currentScene.modalOpen || currentScene.inspectFlash) return
+      if (currentScene.modalOpen || currentScene.inspectFlash || currentScene.departureActive) return
 
-      const result = handlePointerAt(clientX, clientY)
-      if (!result) return
+      const hit = targetId ? hitAreasRef.current.find((area) => area.id === targetId) ?? null : resolveHitTarget(px, py, hitAreasRef.current, hitPriority)
 
-      if (result.hit?.kind === "dog") {
+      if (hit?.kind === "dog") {
         onInteractDog()
         return
       }
 
-      if (result.hit?.kind === "hotspot") {
-        void onInteractHotspot(result.hit.id as SectionSlug)
+      if (hit?.kind === "hotspot") {
+        void onInteractHotspot(hit.id as SectionSlug)
+        return
+      }
+
+      if (hit?.kind === "exit") {
+        void onTriggerExit()
         return
       }
 
@@ -273,15 +304,15 @@ export default function PersonalRoom({
         originX: origin.originX,
         originY: origin.originY,
       }
-      const tile = unprojectIso(result.px, result.py, params)
+      const tile = unprojectIso(px, py, params)
       const nextTile = findNearestWalkableTile({ x: tile.tx, y: tile.ty }, grid)
       void onMoveToTile(nextTile)
     },
-    [grid, handlePointerAt, onInteractDog, onInteractHotspot, onMoveToTile, size.height, size.width]
+    [grid, onInteractDog, onInteractHotspot, onMoveToTile, onTriggerExit, size.height, size.width]
   )
 
   useEffect(() => {
-    if (!isInteractionEnabled || modalOpen || inspectFlash) return
+    if (!isInteractionEnabled || modalOpen || inspectFlash || departureActive) return
     const pendingPointer = pendingPointerRef.current
     if (!pendingPointer) return
 
@@ -289,24 +320,37 @@ export default function PersonalRoom({
     if (!canvas) return
     const rect = canvas.getBoundingClientRect()
     pendingPointerRef.current = null
-    triggerInteractionAt(
-      rect.left + pendingPointer.relativeX * rect.width,
-      rect.top + pendingPointer.relativeY * rect.height
-    )
-  }, [inspectFlash, isInteractionEnabled, modalOpen, triggerInteractionAt])
+    triggerInteractionAt(null, pendingPointer.relativeX * rect.width, pendingPointer.relativeY * rect.height)
+  }, [departureActive, inspectFlash, isInteractionEnabled, modalOpen, triggerInteractionAt])
 
   const handlePointerMove = useCallback(
     (event: React.PointerEvent<HTMLCanvasElement>) => {
       const currentScene = sceneStateRef.current
-      if (!isInteractionEnabled || currentScene.modalOpen || currentScene.inspectFlash) {
-        updateHover(null)
+      if (!isInteractionEnabled || currentScene.modalOpen || currentScene.inspectFlash || currentScene.departureActive) {
+        updateHoverState(null, false)
         return
       }
 
-      const result = handlePointerAt(event.clientX, event.clientY)
-      updateHover(result?.hit?.kind === "hotspot" ? (result.hit.id as SectionSlug) : null)
+      const result = getPointerFrame(event.clientX, event.clientY)
+      updateHoverState(result?.hit?.kind === "hotspot" ? (result.hit.id as SectionSlug) : null, result?.hit?.kind === "exit")
     },
-    [handlePointerAt, isInteractionEnabled, updateHover]
+    [getPointerFrame, isInteractionEnabled, updateHoverState]
+  )
+
+  const handlePointerDown = useCallback(
+    (event: React.PointerEvent<HTMLCanvasElement>) => {
+      const currentScene = sceneStateRef.current
+      if (!isInteractionEnabled || currentScene.modalOpen || currentScene.inspectFlash || currentScene.departureActive) {
+        pointerIntentRef.current = null
+        return
+      }
+
+      const canvas = canvasRef.current
+      const rect = canvas?.getBoundingClientRect()
+      if (!rect || rect.width <= 0 || rect.height <= 0) return
+      pointerIntentRef.current = capturePointerIntent(event.clientX, event.clientY, rect, hitAreasRef.current, hitPriority)
+    },
+    [isInteractionEnabled]
   )
 
   const handlePointerUp = useCallback(
@@ -326,11 +370,25 @@ export default function PersonalRoom({
         return
       }
 
-      if (currentScene.modalOpen || currentScene.inspectFlash) return
+      if (currentScene.modalOpen || currentScene.inspectFlash || currentScene.departureActive) return
+      const intent = pointerIntentRef.current
+      pointerIntentRef.current = null
+      if (intent && pointerIntentWithinTolerance(intent, event.clientX, event.clientY)) {
+        const canvas = canvasRef.current
+        const rect = canvas?.getBoundingClientRect()
+        if (rect) {
+          pendingPointerRef.current = null
+          triggerInteractionAt(intent.targetId, intent.relativeX * rect.width, intent.relativeY * rect.height)
+          return
+        }
+      }
+
+      const current = getPointerFrame(event.clientX, event.clientY)
+      if (!current) return
       pendingPointerRef.current = null
-      triggerInteractionAt(event.clientX, event.clientY)
+      triggerInteractionAt(current.hit?.id ?? null, current.px, current.py)
     },
-    [focusRef, isInteractionEnabled, triggerInteractionAt]
+    [focusRef, getPointerFrame, isInteractionEnabled, triggerInteractionAt]
   )
 
   useEffect(() => {
@@ -368,7 +426,7 @@ export default function PersonalRoom({
       }
 
       const currentScene = sceneStateRef.current
-      drawBackground(ctx, size.width, size.height, now * 0.001, currentScene.modalOpen)
+      drawBackground(ctx, size.width, size.height, now * 0.001, currentScene.modalOpen || currentScene.departureActive)
       drawFloor(ctx, grid, params, TILE_W, TILE_H)
       drawWalls(ctx, grid, params, TILE_W, TILE_H)
       drawRug(ctx, params)
@@ -410,6 +468,11 @@ export default function PersonalRoom({
         }
       })
 
+      scene.push({
+        sort: 1.4,
+        draw: () =>
+          drawExitCrack(sceneContext, currentScene.hoverExit ? "hover" : currentScene.linkedExit ? "active" : "idle", hitAreasRef.current, exitAccent),
+      })
       scene.push({ sort: 3.8, draw: () => drawPlant(sceneContext) })
       scene.push({ sort: 4.4, draw: () => drawArmchair(sceneContext) })
       scene.push({ sort: 4.6, draw: () => drawLamp(sceneContext) })
@@ -440,7 +503,15 @@ export default function PersonalRoom({
       }
 
       const hudTargetId = currentScene.hoverHotspotId ?? currentScene.linkedHotspotId
-      if (hudTargetId) {
+      if (currentScene.hoverExit || currentScene.linkedExit) {
+        drawHudLabel(
+          ctx,
+          size.width,
+          exitLabel,
+          currentScene.linkedExit ? "主角已经锁定裂缝出口" : exitHint,
+          exitAccent
+        )
+      } else if (hudTargetId) {
         const hudHotspot = hotspotMap.get(hudTargetId)
         if (hudHotspot) {
           drawHudLabel(
@@ -453,7 +524,7 @@ export default function PersonalRoom({
         }
       }
 
-      if (currentScene.inspectFlash) {
+      if (currentScene.inspectFlash || currentScene.departureActive) {
         drawInspectFlash(ctx, size.width, size.height, now * 0.001)
       }
 
@@ -462,7 +533,7 @@ export default function PersonalRoom({
 
     frame = requestAnimationFrame(render)
     return () => cancelAnimationFrame(frame)
-  }, [avatarVisualRef, currentTile.x, currentTile.y, dogState.currentTile, dogVisualRef, grid, hotspotMap, hotspots, size.height, size.width, tick, tickDog])
+  }, [avatarVisualRef, currentTile.x, currentTile.y, dogState.currentTile, dogVisualRef, exitAccent, exitHint, exitLabel, grid, hotspotMap, hotspots, size.height, size.width, tick, tickDog])
 
   return (
     <div ref={focusRef} tabIndex={0} className="relative outline-none">
@@ -472,7 +543,7 @@ export default function PersonalRoom({
             房间交互
           </div>
           <div className="mt-2 text-sm text-[rgba(255,245,220,0.92)]">
-            点击或触摸房间物件，角色会先走过去，再打开对应的冒险日志窗。柴犬会自己在房间里活泼地跑来跑去。
+            点击物件会先走近再打开日志窗，点击墙上的裂缝则会带着狗离开出生点，去外面的世界冒险。
           </div>
         </div>
 
@@ -482,8 +553,12 @@ export default function PersonalRoom({
               ? activeSection
                 ? `日志 / ${hotspotMap.get(activeSection)?.label ?? "打开中"}`
                 : "日志已打开"
+              : linkedExit
+                ? exitLabel
               : hoverHotspotId
                 ? hotspotMap.get(hoverHotspotId)?.label ?? "房间漫游"
+                : hoverExit
+                  ? exitLabel
                 : `坐标 ${currentTile.x},${currentTile.y}`}
           </div>
           <button type="button" className="pixel-button px-3 py-2 text-xs sm:text-sm" onClick={onToggleAudio}>
@@ -501,15 +576,22 @@ export default function PersonalRoom({
           width={size.width}
           height={size.height}
           className={`pixel-canvas block w-full touch-manipulation ${
-            !isInteractionEnabled ? "cursor-wait" : modalOpen ? "cursor-default" : hoverHotspotId ? "cursor-pointer" : "cursor-crosshair"
+            !isInteractionEnabled
+              ? "cursor-wait"
+              : modalOpen || departureActive
+                ? "cursor-default"
+                : hoverHotspotId || hoverExit
+                  ? "cursor-pointer"
+                  : "cursor-crosshair"
           }`}
+          onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
-          onPointerLeave={() => updateHover(null)}
+          onPointerLeave={() => updateHoverState(null, false)}
           onPointerUp={handlePointerUp}
         />
         <div className="scanline-overlay pointer-events-none absolute inset-0 opacity-25" />
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-[linear-gradient(180deg,transparent,rgba(9,6,4,0.28))]" />
-        {!isInteractionEnabled && (
+        {!isInteractionEnabled && !departureActive && (
           <div className="pointer-events-none absolute inset-0 grid place-items-center bg-[linear-gradient(180deg,rgba(12,10,8,0.15),rgba(12,10,8,0.38))]">
             <div className="pixel-panel max-w-xs text-center">
               <div className="font-display text-[11px] uppercase tracking-[0.35em] text-[color:var(--game-muted)]">房间加载中</div>
@@ -519,9 +601,19 @@ export default function PersonalRoom({
             </div>
           </div>
         )}
+        {departureActive && (
+          <div className="pointer-events-none absolute inset-0 grid place-items-center bg-[linear-gradient(180deg,rgba(10,10,18,0.16),rgba(8,10,22,0.42))]">
+            <div className="pixel-panel max-w-xs text-center">
+              <div className="font-display text-[11px] uppercase tracking-[0.35em] text-[color:var(--game-muted)]">裂缝已开启</div>
+              <p className="mt-3 text-sm leading-7 text-[color:var(--game-text)]">
+                房间正在收拢成出生点的余光，主角和狗已经穿过裂缝，朝营地前哨出发。
+              </p>
+            </div>
+          </div>
+        )}
         <div
           className={`pointer-events-none absolute inset-0 transition-opacity duration-200 ${
-            inspectFlash || modalOpen ? "opacity-100" : "opacity-0"
+            inspectFlash || modalOpen || departureActive ? "opacity-100" : "opacity-0"
           } bg-[linear-gradient(180deg,rgba(255,244,205,0.12),rgba(15,9,8,0.52))]`}
         />
       </div>
@@ -573,6 +665,32 @@ function drawWalls(ctx: CanvasRenderingContext2D, grid: RoomGrid, params: IsoPro
   for (let y = 2; y < grid.rows - 1; y += 1) {
     const point = projectIso(1, y, params)
     drawRaisedBlock(ctx, point.px, point.py, tileW, tileH, "#b49978", "#6c5136")
+  }
+}
+
+function drawExitCrack(
+  context: SceneContext,
+  mode: "idle" | "hover" | "active",
+  hitAreas: HitTarget[],
+  accent: string
+) {
+  const { ctx, params, time } = context
+  const point = projectIso(17.2, 3.1, params)
+  drawObjectPulse(ctx, point.px - 2, point.py - 42, 48, accent, mode)
+  rect(ctx, point.px - 30, point.py - 78, 12, 54, "#6d5236")
+  rect(ctx, point.px - 18, point.py - 84, 30, 66, "#241719")
+  rect(ctx, point.px - 14, point.py - 78, 22, 56, "#35203a")
+  pushExitHitArea(hitAreas, point)
+
+  for (let index = 0; index < 5; index += 1) {
+    const wobble = Math.sin(time * 4 + index) * 2
+    line(ctx, point.px - 10 + index * 4, point.py - 78 + index * 10, point.px - 2 + wobble, point.py - 68 + index * 7, accent, 2)
+  }
+
+  rect(ctx, point.px - 10, point.py - 18, 24, 10, "#6a4630")
+
+  if (mode === "active") {
+    drawBeacon(ctx, point.px - 2, point.py - 94, accent)
   }
 }
 
@@ -763,48 +881,8 @@ function drawAvatar(context: SceneContext, avatar: RoomAvatarState, moving: bool
 function drawDog(context: SceneContext, dog: RoomAvatarState, animation: DogAnimationState, hitAreas: HitTarget[]) {
   const { ctx, params, tileH, time } = context
   const point = projectIso(dog.x, dog.y, params)
-  const runFrame = Math.floor(time * 10) % 2
-  const idleFrame = Math.floor(time * 4) % 2
-  const wagFrame = Math.floor(time * 18) % 2
-  const bob = animation.moving ? (runFrame === 0 ? -1.5 : 1.2) : idleFrame === 0 ? 0 : -0.8
-  const earLift = animation.moving ? 0 : idleFrame === 0 ? 0 : 1
-  const tailShift = animation.wagging ? (wagFrame === 0 ? -2 : 2) : 0
-  const legLift = animation.moving ? (runFrame === 0 ? 0 : 2) : 0
-  const facingLeft = dog.facing === "W"
-
-  pushDogHitArea(hitAreas, point)
-
-  ctx.fillStyle = "rgba(0, 0, 0, 0.16)"
-  ctx.beginPath()
-  ctx.ellipse(point.px, point.py + tileH * 0.62, 14, 7, 0, 0, Math.PI * 2)
-  ctx.fill()
-
-  ctx.save()
-  ctx.translate(point.px, point.py - 4 + bob)
-  if (facingLeft) {
-    ctx.scale(-1, 1)
-  }
-
-  rect(ctx, -15 + tailShift, -18, 4, 10, "#d98b34")
-  rect(ctx, -17 + tailShift, -20, 3, 4, "#f4efe8")
-
-  rect(ctx, -10, -18, 24, 12, "#d98b34")
-  rect(ctx, -4, -15, 11, 9, "#f7eedf")
-  rect(ctx, 10, -24, 12, 11, "#d98b34")
-  rect(ctx, 16, -20, 6, 5, "#f7eedf")
-  rect(ctx, 12, -30 + earLift, 3, 7, "#925124")
-  rect(ctx, 17, -29, 3, 6, "#925124")
-
-  rect(ctx, -7, -6 - legLift, 4, 12 + legLift, "#f7eedf")
-  rect(ctx, 1, -4, 4, 10, "#f7eedf")
-  rect(ctx, 8, -4 + legLift, 4, 10 - legLift + 2, "#f7eedf")
-  rect(ctx, 14, -6, 4, 12, "#f7eedf")
-
-  ctx.fillStyle = "#171312"
-  ctx.fillRect(18, -20, 2, 2)
-  ctx.fillRect(21, -18, 2, 2)
-  ctx.fillRect(19, -22, 2, 2)
-  ctx.restore()
+  pushDogHitArea(hitAreas, { px: point.px, py: point.py + 6 })
+  drawDogSprite(ctx, point, tileH, time, dog, animation)
 }
 function drawHudLabel(ctx: CanvasRenderingContext2D, width: number, title: string, hint: string, accent: string) {
   const panelWidth = Math.min(340, width - 32)

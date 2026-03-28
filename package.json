@@ -4,13 +4,19 @@
   "private": true,
   "scripts": {
     "build": "next build",
-    "dev": "next dev",
+    "clean": "node -e \"try{require('fs').rmSync('.next',{recursive:true,force:true})}catch(e){}\"",
+    "dev": "next dev --turbopack",
+    "dev:clean": "npm run clean && next dev --turbopack",
+    "dev:webpack": "next dev",
     "lint": "eslint .",
-    "start": "next start"
+    "preview": "npm run build && next start",
+    "start": "next start",
+    "test": "node --experimental-strip-types --experimental-specifier-resolution=node --test --test-isolation=none"
   },
   "dependencies": {
     "autoprefixer": "^10.4.20",
     "next": "^15.5.12",
+    "phaser": "^3.90.0",
     "react": "^19",
     "react-dom": "^19",
     "tailwindcss-animate": "^1.0.7"
