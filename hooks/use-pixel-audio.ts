@@ -2,7 +2,15 @@
 
 import { useCallback, useEffect, useRef, useState } from "react"
 
+import type { SceneId, TimeOfDay, Weather } from "@/game/types"
+
 type SoundEvent = "hover" | "confirm" | "open" | "switch" | "close" | "blocked"
+
+type AmbienceProfile = {
+  sceneId: SceneId
+  timeOfDay: TimeOfDay
+  weather: Weather
+}
 
 export type AudioFeedbackState = {
   enabled: boolean
@@ -10,6 +18,26 @@ export type AudioFeedbackState = {
   toggleEnabled: () => void
   prime: () => Promise<void>
   playSound: (event: SoundEvent) => void
+  setAmbience: (sceneId: SceneId, timeOfDay: TimeOfDay, weather: Weather) => void
+}
+
+const baseSceneFrequency: Record<SceneId, number> = {
+  room: 88,
+  outpost: 118,
+  ridge: 146,
+  shore: 174,
+}
+
+const timeMultiplier: Record<TimeOfDay, number> = {
+  day: 1,
+  dusk: 0.92,
+  night: 0.78,
+}
+
+const weatherGain: Record<Weather, number> = {
+  clear: 0.082,
+  drizzle: 0.102,
+  fog: 0.094,
 }
 
 export function usePixelAudio(): AudioFeedbackState {
@@ -21,6 +49,26 @@ export function usePixelAudio(): AudioFeedbackState {
   const ambientGainRef = useRef<GainNode | null>(null)
   const ambientNodesRef = useRef<OscillatorNode[]>([])
   const hoverCooldownRef = useRef(0)
+  const ambienceProfileRef = useRef<AmbienceProfile>({ sceneId: "room", timeOfDay: "day", weather: "clear" })
+
+  const applyAmbience = useCallback((profile: AmbienceProfile) => {
+    const context = contextRef.current
+    const ambientGain = ambientGainRef.current
+    const [a, b] = ambientNodesRef.current
+    if (!context || !ambientGain || !a || !b) return
+
+    const base = baseSceneFrequency[profile.sceneId] * timeMultiplier[profile.timeOfDay]
+    const weatherOffset = profile.weather === "drizzle" ? -10 : profile.weather === "fog" ? -18 : 0
+    const now = context.currentTime
+
+    a.frequency.cancelScheduledValues(now)
+    b.frequency.cancelScheduledValues(now)
+    ambientGain.gain.cancelScheduledValues(now)
+
+    a.frequency.linearRampToValueAtTime(base + weatherOffset, now + 0.35)
+    b.frequency.linearRampToValueAtTime(base * 1.52 + weatherOffset * 0.35, now + 0.35)
+    ambientGain.gain.linearRampToValueAtTime(enabled ? weatherGain[profile.weather] : 0, now + 0.3)
+  }, [enabled])
 
   const ensureContext = useCallback(async () => {
     if (!contextRef.current) {
@@ -47,18 +95,14 @@ export function usePixelAudio(): AudioFeedbackState {
       const root = contextRef.current!
       const ambientA = root.createOscillator()
       ambientA.type = "triangle"
-      ambientA.frequency.value = 96
-      ambientA.detune.value = -8
 
       const ambientB = root.createOscillator()
       ambientB.type = "sine"
-      ambientB.frequency.value = 144
-      ambientB.detune.value = 5
 
       const gainA = root.createGain()
       gainA.gain.value = 0.018
       const gainB = root.createGain()
-      gainB.gain.value = 0.01
+      gainB.gain.value = 0.012
 
       ambientA.connect(gainA).connect(ambientGainRef.current)
       ambientB.connect(gainB).connect(ambientGainRef.current)
@@ -66,10 +110,11 @@ export function usePixelAudio(): AudioFeedbackState {
       ambientA.start()
       ambientB.start()
       ambientNodesRef.current = [ambientA, ambientB]
+      applyAmbience(ambienceProfileRef.current)
     }
 
     setUnlocked(true)
-  }, [])
+  }, [applyAmbience])
 
   const prime = useCallback(async () => {
     if (typeof window === "undefined") return
@@ -77,14 +122,8 @@ export function usePixelAudio(): AudioFeedbackState {
   }, [ensureContext])
 
   useEffect(() => {
-    const ambientGain = ambientGainRef.current
-    const context = contextRef.current
-    if (!ambientGain || !context) return
-
-    const now = context.currentTime
-    ambientGain.gain.cancelScheduledValues(now)
-    ambientGain.gain.linearRampToValueAtTime(enabled ? 0.085 : 0, now + 0.2)
-  }, [enabled, unlocked])
+    applyAmbience(ambienceProfileRef.current)
+  }, [applyAmbience, enabled, unlocked])
 
   const playSound = useCallback(
     (event: SoundEvent) => {
@@ -132,6 +171,12 @@ export function usePixelAudio(): AudioFeedbackState {
     [enabled, unlocked]
   )
 
+  const setAmbience = useCallback((sceneId: SceneId, timeOfDay: TimeOfDay, weather: Weather) => {
+    const profile = { sceneId, timeOfDay, weather }
+    ambienceProfileRef.current = profile
+    applyAmbience(profile)
+  }, [applyAmbience])
+
   const toggleEnabled = useCallback(() => {
     setEnabled((value) => !value)
   }, [])
@@ -149,5 +194,6 @@ export function usePixelAudio(): AudioFeedbackState {
     toggleEnabled,
     prime,
     playSound,
+    setAmbience,
   }
 }

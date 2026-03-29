@@ -71,6 +71,8 @@ export function createWorldScene(Phaser: PhaserModule, bridge: SceneBridge) {
         if (event.key === "Escape") {
           if (this.snapshot.activeSection) {
             bridge.send({ type: "closeSection" })
+          } else if (this.snapshot.taskPanelOpen) {
+            bridge.send({ type: "closeTaskPanel" })
           } else if (this.snapshot.worldMapOpen) {
             bridge.send({ type: "setWorldMapOpen", open: false })
           }
@@ -122,7 +124,7 @@ export function createWorldScene(Phaser: PhaserModule, bridge: SceneBridge) {
       if (scene.id === "room") {
         this.drawRoomFloor(params)
       } else {
-        this.drawOutpostFloor(params)
+        this.drawOutdoorFloor(scene.id, params, timeSeconds)
       }
 
       for (const hotspot of scene.hotspots) {
@@ -148,6 +150,7 @@ export function createWorldScene(Phaser: PhaserModule, bridge: SceneBridge) {
       }
 
       this.updateEntities(params, timeSeconds)
+      this.drawAtmosphere(timeSeconds)
       this.drawOverlay(timeSeconds)
     }
 
@@ -180,6 +183,67 @@ export function createWorldScene(Phaser: PhaserModule, bridge: SceneBridge) {
       }
     }
 
+    private drawAtmosphere(timeSeconds: number) {
+      const { environment, dynamicEvent } = this.snapshot
+
+      if (environment.timeOfDay === "dusk") {
+        this.overlayGraphics.fillStyle(0xffc27a, 0.08)
+        this.overlayGraphics.fillRect(0, 0, this.scale.width, this.scale.height)
+      }
+
+      if (environment.timeOfDay === "night") {
+        this.overlayGraphics.fillStyle(0x0d1b2e, 0.24)
+        this.overlayGraphics.fillRect(0, 0, this.scale.width, this.scale.height)
+        for (let index = 0; index < 18; index += 1) {
+          const x = ((index * 83) % this.scale.width) + Math.sin(timeSeconds + index) * 6
+          const y = 24 + ((index * 37) % Math.max(80, Math.floor(this.scale.height * 0.28)))
+          this.overlayGraphics.fillStyle(0xeef6ff, 0.55)
+          this.overlayGraphics.fillCircle(x, y, 1.4 + (index % 3) * 0.3)
+        }
+      }
+
+      if (environment.weather === "drizzle") {
+        this.overlayGraphics.lineStyle(2, 0xcfe9ff, 0.24)
+        for (let index = 0; index < 22; index += 1) {
+          const startX = ((index * 61) % (this.scale.width + 60)) - 30 + Math.sin(timeSeconds * 1.6 + index) * 18
+          const startY = ((index * 27) % this.scale.height) - 20
+          this.overlayGraphics.beginPath()
+          this.overlayGraphics.moveTo(startX, startY)
+          this.overlayGraphics.lineTo(startX - 10, startY + 30)
+          this.overlayGraphics.strokePath()
+        }
+      }
+
+      if (environment.weather === "fog") {
+        for (let index = 0; index < 7; index += 1) {
+          const x = this.scale.width * (0.14 + index * 0.12) + Math.sin(timeSeconds * 0.35 + index) * 16
+          const y = this.scale.height * (0.22 + (index % 3) * 0.16)
+          this.overlayGraphics.fillStyle(0xf1f6f7, 0.1)
+          this.overlayGraphics.fillEllipse(x, y, 180, 64)
+        }
+      }
+
+      if (dynamicEvent?.id === "campfire-circle") {
+        this.overlayGraphics.fillStyle(0xffc782, 0.08 + Math.sin(timeSeconds * 3.4) * 0.02)
+        this.overlayGraphics.fillEllipse(this.scale.width * 0.48, this.scale.height * 0.62, 260, 110)
+      }
+
+      if (dynamicEvent?.id === "ridge-fog") {
+        this.overlayGraphics.fillStyle(0xe6eff0, 0.14)
+        this.overlayGraphics.fillEllipse(this.scale.width * 0.56, this.scale.height * 0.42, 320, 100)
+      }
+
+      if (dynamicEvent?.id === "luminous-tide") {
+        this.overlayGraphics.fillStyle(0x8bf0ff, 0.1 + Math.sin(timeSeconds * 3) * 0.02)
+        this.overlayGraphics.fillEllipse(this.scale.width * 0.78, this.scale.height * 0.48, 220, 140)
+      }
+
+      if (dynamicEvent?.id === "window-rain") {
+        this.overlayGraphics.fillStyle(0xcfe7ff, 0.08)
+        this.overlayGraphics.fillRect(this.scale.width * 0.62, this.scale.height * 0.08, this.scale.width * 0.2, this.scale.height * 0.22)
+      }
+    }
+
     private drawBackground(timeSeconds: number) {
       const { theme } = this.snapshot.scene
       this.worldGraphics.fillStyle(theme.backgroundTop, 1)
@@ -196,11 +260,21 @@ export function createWorldScene(Phaser: PhaserModule, bridge: SceneBridge) {
         this.worldGraphics.fillCircle(x, y, 28)
       }
 
-      if (this.snapshot.scene.id === "outpost") {
+      if (this.snapshot.scene.id === "outpost" || this.snapshot.scene.id === "ridge") {
         this.worldGraphics.fillStyle(0x1c2d38, 0.9)
         this.worldGraphics.fillTriangle(0, this.scale.height * 0.42, this.scale.width * 0.18, this.scale.height * 0.24, this.scale.width * 0.36, this.scale.height * 0.42)
         this.worldGraphics.fillTriangle(this.scale.width * 0.2, this.scale.height * 0.42, this.scale.width * 0.46, this.scale.height * 0.16, this.scale.width * 0.72, this.scale.height * 0.42)
         this.worldGraphics.fillTriangle(this.scale.width * 0.58, this.scale.height * 0.42, this.scale.width * 0.82, this.scale.height * 0.22, this.scale.width, this.scale.height * 0.42)
+      }
+
+      if (this.snapshot.scene.id === "shore") {
+        this.worldGraphics.fillStyle(0x5eb8dc, 0.92)
+        this.worldGraphics.fillRect(this.scale.width * 0.62, this.scale.height * 0.3, this.scale.width * 0.42, this.scale.height * 0.42)
+        this.worldGraphics.fillStyle(0xffffff, 0.18)
+        for (let index = 0; index < 4; index += 1) {
+          const y = this.scale.height * 0.34 + index * 24 + Math.sin(timeSeconds * 2 + index) * 3
+          this.worldGraphics.fillEllipse(this.scale.width * 0.8, y, 164 - index * 14, 10)
+        }
       }
     }
 
@@ -230,22 +304,50 @@ export function createWorldScene(Phaser: PhaserModule, bridge: SceneBridge) {
       this.worldGraphics.fillEllipse((rugStart.px + rugEnd.px) / 2, (rugStart.py + rugEnd.py) / 2, 220, 100)
     }
 
-    private drawOutpostFloor(params: ReturnType<typeof makeIsoParams>) {
+    private drawOutdoorFloor(sceneId: "outpost" | "ridge" | "shore", params: ReturnType<typeof makeIsoParams>, timeSeconds: number) {
       const { grid } = this.snapshot.scene
       for (let y = 0; y < grid.rows; y += 1) {
         for (let x = 0; x < grid.cols; x += 1) {
           const point = projectPoint(x, y, params)
           const blocked = !grid.walkable[y * grid.cols + x]
-          const onPath = x >= 5 && x <= 16 && y >= 7 && y <= 13 && Math.abs(x - y) <= 6
-          const color = blocked ? 0x546040 : onPath ? ((x + y) % 2 === 0 ? 0xa98c59 : 0x96794a) : (x + y) % 2 === 0 ? 0x6e7f47 : 0x637341
+          const onOutpostPath = x >= 5 && x <= 16 && y >= 7 && y <= 13 && Math.abs(x - y) <= 6
+          const onRidgeTrail = x >= 7 && x <= 18 && y >= 6 && y <= 11 && Math.abs(x - 12) + Math.abs(y - 8) <= 10
+          const onShoreSand = x >= 8 && x <= 20 && y >= 5 && y <= 13
+          let color = 0x637341
+
+          if (blocked) {
+            color = sceneId === "shore" ? 0x718564 : 0x546040
+          } else if (sceneId === "outpost") {
+            color = onOutpostPath ? ((x + y) % 2 === 0 ? 0xa98c59 : 0x96794a) : (x + y) % 2 === 0 ? 0x6e7f47 : 0x637341
+          } else if (sceneId === "ridge") {
+            color = onRidgeTrail ? ((x + y) % 2 === 0 ? 0xb89a68 : 0xa48759) : (x + y) % 2 === 0 ? 0x738259 : 0x66734a
+          } else {
+            color = onShoreSand ? ((x + y) % 2 === 0 ? 0xc8b181 : 0xb89f71) : (x + y) % 2 === 0 ? 0x6c8b80 : 0x5b7c73
+          }
+
           this.fillDiamond(point.px, point.py, TILE_W, TILE_H, color, 1)
         }
       }
 
-      const start = projectPoint(6, 10, params)
-      const end = projectPoint(16, 12, params)
-      this.worldGraphics.fillStyle(0xf0dbad, 0.12)
-      this.worldGraphics.fillEllipse((start.px + end.px) / 2, (start.py + end.py) / 2, 284, 96)
+      if (sceneId === "outpost") {
+        const start = projectPoint(6, 10, params)
+        const end = projectPoint(16, 12, params)
+        this.worldGraphics.fillStyle(0xf0dbad, 0.12)
+        this.worldGraphics.fillEllipse((start.px + end.px) / 2, (start.py + end.py) / 2, 284, 96)
+      }
+
+      if (sceneId === "ridge") {
+        const start = projectPoint(8, 8, params)
+        const end = projectPoint(18, 9, params)
+        this.worldGraphics.fillStyle(0xffe0a8, 0.1)
+        this.worldGraphics.fillEllipse((start.px + end.px) / 2, (start.py + end.py) / 2, 260, 80)
+      }
+
+      if (sceneId === "shore") {
+        const shoreline = projectPoint(19, 6, params)
+        this.worldGraphics.fillStyle(0x7cd7ff, 0.2 + Math.sin(timeSeconds * 2) * 0.03)
+        this.worldGraphics.fillEllipse(shoreline.px + 18, shoreline.py + 28, 150, 120)
+      }
     }
 
     private drawHotspot(hotspot: SceneHotspot, params: ReturnType<typeof makeIsoParams>, mode: "idle" | "hover" | "active", timeSeconds: number) {
@@ -291,6 +393,22 @@ export function createWorldScene(Phaser: PhaserModule, bridge: SceneBridge) {
           this.fillRect(point.px - 30, point.py - 48, 42, 10, 0xb99359)
           this.fillRect(point.px - 24, point.py - 32, 38, 10, 0xc8a86a)
           break
+        case "memory-cache":
+          this.fillRect(point.px - 20, point.py - 24, 28, 18, 0x6a4c34)
+          this.fillRect(point.px - 16, point.py - 20, 20, 10, mode === "active" ? 0xfff0b6 : mode === "hover" ? 0xf7d67a : 0xd8b463)
+          this.fillRect(point.px - 4, point.py - 30, 6, 8, 0x8aa8c5)
+          this.drawGlow(point.px - 1, point.py - 28, mode === "active" ? 20 : 13, 0xfff1a6, mode === "active" ? 0.28 : 0.18)
+          break
+        case "npc": {
+          const accent = Number.parseInt(hotspot.accent.replace("#", ""), 16)
+          this.fillCircle(point.px, point.py - 38, 10, accent)
+          this.fillRect(point.px - 10, point.py - 26, 20, 24, 0x3a2d27)
+          this.fillRect(point.px - 7, point.py - 14, 5, 14, accent)
+          this.fillRect(point.px + 2, point.py - 14, 5, 14, accent)
+          this.strokeLine(point.px - 6, point.py - 2, point.px - 12, point.py + 18, 0x3a2d27, 3)
+          this.strokeLine(point.px + 6, point.py - 2, point.px + 12, point.py + 18, 0x3a2d27, 3)
+          break
+        }
         default:
           break
       }
@@ -344,6 +462,19 @@ export function createWorldScene(Phaser: PhaserModule, bridge: SceneBridge) {
           this.fillRect(point.px - 2, point.py - 34, 6, 18, 0xff8f55)
           this.fillRect(point.px + 4, point.py - 26, 5, 10, 0xffe09a)
           break
+        case "memory-cache":
+          this.fillRect(point.px - 20, point.py - 24, 28, 18, 0x6a4c34)
+          this.fillRect(point.px - 16, point.py - 20, 20, 10, 0xd8b463)
+          this.fillRect(point.px - 4, point.py - 30, 6, 8, 0x8aa8c5)
+          if (decor.accent) {
+            this.drawGlow(point.px - 1, point.py - 28, 12 + Math.sin(timeSeconds * 3) * 2, Number.parseInt(decor.accent.replace("#", ""), 16), 0.16)
+          }
+          break
+        case "shore-wave":
+          this.strokeLine(point.px - 22, point.py - 8, point.px - 6, point.py - 14 + Math.sin(timeSeconds * 2) * 2, 0xd8f7ff, 3)
+          this.strokeLine(point.px - 6, point.py - 14 + Math.sin(timeSeconds * 2) * 2, point.px + 10, point.py - 8, 0xd8f7ff, 3)
+          this.strokeLine(point.px + 10, point.py - 8, point.px + 28, point.py - 12, 0xd8f7ff, 3)
+          break
         default:
           break
       }
@@ -377,6 +508,8 @@ export function createWorldScene(Phaser: PhaserModule, bridge: SceneBridge) {
     private sendTargetInteraction(target: HoverTarget) {
       if (target.kind === "dog") {
         bridge.send({ type: "interactDog" })
+      } else if (target.kind === "npc") {
+        bridge.send({ type: "interactNpc", npcId: target.npcId })
       } else if (target.kind === "exit") {
         bridge.send({ type: "interactExit", exitId: target.id })
       } else {
@@ -516,6 +649,17 @@ export function createWorldScene(Phaser: PhaserModule, bridge: SceneBridge) {
 }
 
 function hoverTargetFromHotspot(hotspot: SceneHotspot): HoverTarget {
+  if (hotspot.kind === "npc" && hotspot.npcId) {
+    return {
+      kind: "npc",
+      id: hotspot.id,
+      label: hotspot.label,
+      hint: hotspot.hint,
+      accent: hotspot.accent,
+      npcId: hotspot.npcId,
+    }
+  }
+
   return {
     kind: "hotspot",
     id: hotspot.id,

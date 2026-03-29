@@ -1,16 +1,25 @@
 "use client"
 
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react"
+
 import ArchiveModal from "@/components/archive-modal"
+import TaskPanel from "@/components/task-panel"
 import { createSceneBridge } from "@/game/phaser/adapters/sceneBridge"
 import { createPhaserGame } from "@/game/phaser/createPhaserGame"
 import { createAdventureStore } from "@/game/simulation/adventure-store"
-import type { AdventureCommand } from "@/game/types"
+import type { AdventureCommand, SceneId, WorldDestination } from "@/game/types"
 import { usePixelAudio } from "@/hooks/use-pixel-audio"
 import { blogSections, sectionList, type SectionSlug } from "@/lib/blog-content"
 
 const OPEN_MS = 180
 const CLOSE_MS = 220
+
+const sceneLabels: Record<SceneId, string> = {
+  room: "Room",
+  outpost: "Outpost",
+  ridge: "Ridge",
+  shore: "Shore",
+}
 
 function useSectionOverlay(activeSection: SectionSlug | null) {
   const [displayedSection, setDisplayedSection] = useState<SectionSlug | null>(activeSection)
@@ -22,9 +31,7 @@ function useSectionOverlay(activeSection: SectionSlug | null) {
     if (activeSection) {
       setDisplayedSection(activeSection)
       setPhase("opening")
-      timer = window.setTimeout(() => {
-        setPhase("open")
-      }, OPEN_MS)
+      timer = window.setTimeout(() => setPhase("open"), OPEN_MS)
       return () => window.clearTimeout(timer)
     }
 
@@ -39,17 +46,16 @@ function useSectionOverlay(activeSection: SectionSlug | null) {
     return () => window.clearTimeout(timer)
   }, [activeSection, displayedSection])
 
-  return {
-    displayedSection,
-    phase,
-  }
+  return { displayedSection, phase }
 }
 
-type PhaserViewportProps = {
-  bridge: ReturnType<typeof createSceneBridge>
+function getDestinationStatus(destination: WorldDestination, currentSceneId: SceneId) {
+  if (!destination.available) return "Locked Route"
+  if (destination.targetSceneId === currentSceneId) return "Current Zone"
+  return "Open Route"
 }
 
-function PhaserViewport({ bridge }: PhaserViewportProps) {
+function PhaserViewport({ bridge }: { bridge: ReturnType<typeof createSceneBridge> }) {
   const containerRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
@@ -94,17 +100,17 @@ export default function AdventureShell() {
     audioRef.current = audio
   }, [audio])
 
-  useEffect(() => {
-    return () => {
-      store.destroy()
-    }
-  }, [store])
+  useEffect(() => () => store.destroy(), [store])
 
   useEffect(() => {
     if (snapshot.audioEnabled !== audio.enabled) {
       audio.toggleEnabled()
     }
   }, [audio, snapshot.audioEnabled])
+
+  useEffect(() => {
+    audio.setAmbience(snapshot.sceneId, snapshot.environment.timeOfDay, snapshot.environment.weather)
+  }, [audio, snapshot.environment.timeOfDay, snapshot.environment.weather, snapshot.sceneId])
 
   const sendCommand = useCallback(
     (command: AdventureCommand) => {
@@ -121,8 +127,11 @@ export default function AdventureShell() {
   const bridge = useMemo(() => createSceneBridge(store, sendCommand), [sendCommand, store])
   const { displayedSection, phase } = useSectionOverlay(snapshot.activeSection)
   const section = displayedSection ? blogSections[displayedSection] : null
-  const contextLabel = snapshot.contextTarget?.label ?? snapshot.hoverTarget?.label ?? snapshot.scene.ui.title
-  const contextHint = snapshot.contextTarget?.hint ?? snapshot.hoverTarget?.hint ?? snapshot.scene.ui.description
+  const contextLabel = snapshot.contextTarget?.label ?? snapshot.hoverTarget?.label ?? snapshot.activeNpc?.label ?? snapshot.scene.ui.title
+  const contextHint = snapshot.contextTarget?.hint ?? snapshot.hoverTarget?.hint ?? snapshot.activeNpc?.profile ?? snapshot.scene.ui.description
+  const unlockedRoutes = snapshot.worldDestinations.filter((destination) => destination.available).length
+  const unlockedAchievements = snapshot.achievements.filter((item) => item.unlocked).length
+  const unlockedScrapbook = snapshot.scrapbook.filter((item) => item.unlocked).length
 
   return (
     <main className="min-h-screen px-4 py-4 sm:px-6 sm:py-6 lg:px-10">
@@ -130,9 +139,7 @@ export default function AdventureShell() {
         <section className="pixel-frame overflow-hidden">
           <div className="flex flex-wrap items-start justify-between gap-3 border-b-[3px] border-[rgba(29,21,17,0.18)] px-4 py-4">
             <div className="max-w-3xl">
-              <div className="font-display text-[11px] uppercase tracking-[0.35em] text-[rgba(255,247,226,0.8)]">
-                {snapshot.scene.id === "room" ? "Phaser Room Runtime" : "Phaser Outpost Runtime"}
-              </div>
+              <div className="font-display text-[11px] uppercase tracking-[0.35em] text-[rgba(255,247,226,0.8)]">{snapshot.scene.ui.title}</div>
               <div className="mt-2 text-xl font-black text-[color:var(--game-text)] sm:text-2xl">{contextLabel}</div>
               <p className="mt-2 text-sm leading-7 text-[color:var(--game-subtle)] sm:text-base">{contextHint}</p>
             </div>
@@ -140,13 +147,20 @@ export default function AdventureShell() {
             <div className="flex flex-wrap items-center gap-2">
               <div className="pixel-chip bg-[rgba(255,246,220,0.85)] text-xs">
                 {snapshot.transitionState.phase === "switching"
-                  ? `切换到 ${snapshot.scene.id === "room" ? "房间" : "前哨"}`
-                  : `${snapshot.scene.id === "room" ? "房间" : "前哨"}坐标 ${snapshot.player.currentTile.x},${snapshot.player.currentTile.y}`}
+                  ? `Switching to ${sceneLabels[snapshot.scene.id]}`
+                  : `${sceneLabels[snapshot.scene.id]} tile ${snapshot.player.currentTile.x},${snapshot.player.currentTile.y}`}
               </div>
+              <div className="pixel-chip text-xs">{snapshot.environment.timeLabel}</div>
+              <div className="pixel-chip text-xs">{snapshot.environment.weatherLabel}</div>
+              <div className="pixel-chip text-xs">Stage: {snapshot.quest.currentStageLabel}</div>
+              {snapshot.dynamicEvent && <div className="pixel-chip text-xs">Event: {snapshot.dynamicEvent.label}</div>}
               {snapshot.player.bubble && <div className="pixel-chip text-xs">{snapshot.player.bubble}</div>}
               {snapshot.dog.bubble && <div className="pixel-chip text-xs">{snapshot.dog.bubble}</div>}
+              <button type="button" className="pixel-button px-3 py-2 text-xs sm:text-sm" onClick={() => sendCommand({ type: "openTaskPanel" })}>
+                Task journal
+              </button>
               <button type="button" className="pixel-button px-3 py-2 text-xs sm:text-sm" onClick={() => sendCommand({ type: "toggleAudio" })}>
-                {snapshot.audioEnabled ? "环境音开启" : "环境音关闭"}
+                {snapshot.audioEnabled ? "Ambient on" : "Ambient off"}
               </button>
             </div>
           </div>
@@ -156,92 +170,128 @@ export default function AdventureShell() {
           </div>
         </section>
 
-        <section className="grid gap-4 lg:grid-cols-[0.9fr_1.1fr]">
-          <div className="pixel-panel">
-            <div className="font-display text-xs uppercase tracking-[0.3em] text-[color:var(--game-muted)]">{snapshot.scene.ui.primaryPanelTitle}</div>
-            <div className="mt-4 grid gap-3 text-sm leading-7 text-[color:var(--game-text)]">
-              {snapshot.scene.ui.primaryPanelBody.map((line) => (
-                <p key={line}>{line}</p>
-              ))}
+        <section className="grid gap-4 lg:grid-cols-[1.08fr_0.92fr]">
+          <div className="grid gap-4">
+            <div className="pixel-panel">
+              <div className="font-display text-xs uppercase tracking-[0.3em] text-[color:var(--game-muted)]">{snapshot.scene.ui.primaryPanelTitle}</div>
+              <div className="mt-4 grid gap-3 text-sm leading-7 text-[color:var(--game-text)]">
+                {snapshot.scene.ui.primaryPanelBody.map((line) => (
+                  <p key={line}>{line}</p>
+                ))}
+              </div>
+            </div>
+
+            <div className="pixel-panel">
+              <div className="font-display text-xs uppercase tracking-[0.3em] text-[color:var(--game-muted)]">V3 Atmosphere</div>
+              <div className="mt-4 grid gap-3 text-sm leading-7 text-[color:var(--game-text)]">
+                <p>{snapshot.environment.sceneAmbience}</p>
+                <p>{snapshot.dynamicEvent ? snapshot.dynamicEvent.description : "No special event is active in this zone right now."}</p>
+                <p>
+                  Achievements unlocked: {unlockedAchievements}/{snapshot.achievements.length}. Scrapbook pages pinned: {unlockedScrapbook}/{snapshot.scrapbook.length}.
+                </p>
+              </div>
+              {snapshot.scene.id === "room" ? (
+                <div className="mt-4 flex flex-wrap gap-3">
+                  {sectionList.map((item) => (
+                    <button key={item.slug} type="button" className="pixel-button text-sm" onClick={() => sendCommand({ type: "openSection", slug: item.slug })}>
+                      {item.roomLabel}
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <div className="mt-4 rounded-[4px] border-[3px] border-[color:var(--game-ink)] bg-[rgba(255,249,233,0.72)] px-4 py-4 text-sm leading-7 text-[color:var(--game-subtle)]">
+                  The task journal now combines route progress, atmosphere, achievements, and scrapbook unlocks in one place.
+                </div>
+              )}
             </div>
           </div>
 
-          <div className="pixel-panel">
-            <div className="font-display text-xs uppercase tracking-[0.3em] text-[color:var(--game-muted)]">{snapshot.scene.ui.secondaryPanelTitle}</div>
-            <div className="mt-4 grid gap-3 text-sm leading-7 text-[color:var(--game-text)]">
-              {snapshot.scene.ui.secondaryPanelBody.map((line) => (
-                <p key={line}>{line}</p>
-              ))}
-            </div>
-
-            {snapshot.scene.id === "room" ? (
-              <div className="mt-4 flex flex-wrap gap-3">
-                {sectionList.map((item) => (
-                  <button
-                    key={item.slug}
-                    type="button"
-                    className="pixel-button text-sm"
-                    onClick={() => sendCommand({ type: "openSection", slug: item.slug })}
-                  >
-                    {item.roomLabel}
-                  </button>
+          <div className="grid gap-4">
+            <div className="pixel-panel">
+              <div className="font-display text-xs uppercase tracking-[0.3em] text-[color:var(--game-muted)]">Current Stage</div>
+              <h2 className="mt-2 text-lg font-black text-[color:var(--game-text)]">{snapshot.quest.currentStageLabel}</h2>
+              <p className="mt-3 text-sm leading-7 text-[color:var(--game-subtle)]">{snapshot.quest.currentStageDescription}</p>
+              <div className="mt-4 flex flex-wrap gap-2">
+                <div className="pixel-chip text-xs">{snapshot.quest.progressLabel}</div>
+                <div className="pixel-chip text-xs">Next stop: {snapshot.quest.nextLocation}</div>
+                {snapshot.activeNpc && <div className="pixel-chip text-xs">Key contact: {snapshot.activeNpc.label}</div>}
+              </div>
+              <div className="mt-4 grid gap-3">
+                {snapshot.objectives.map((objective) => (
+                  <div key={objective.id} className="rounded-[4px] border-[3px] border-[color:var(--game-ink)] bg-[rgba(255,249,233,0.76)] px-4 py-3">
+                    <div className="text-sm font-black text-[color:var(--game-text)]">{objective.label}</div>
+                    <p className="mt-2 text-sm leading-7 text-[color:var(--game-subtle)]">{objective.description}</p>
+                  </div>
                 ))}
               </div>
-            ) : (
-              <div className="mt-4 rounded-[4px] border-[3px] border-[color:var(--game-ink)] bg-[rgba(255,249,233,0.72)] px-4 py-4 text-sm leading-7 text-[color:var(--game-subtle)]">
-                路牌会打开世界导航。第一版先把结构立住：可进入目标和未来区域会一起挂在面板里，而不是继续把出口写死在页面组件里。
+            </div>
+
+            <div className="pixel-panel">
+              <div className="font-display text-xs uppercase tracking-[0.3em] text-[color:var(--game-muted)]">Route Intel</div>
+              <div className="mt-4 grid gap-3">
+                {snapshot.worldDestinations.map((destination) => (
+                  <div key={destination.id} className="rounded-[4px] border-[3px] border-[color:var(--game-ink)] bg-[rgba(255,249,233,0.78)] px-4 py-3">
+                    <div className="flex flex-wrap items-start justify-between gap-2">
+                      <div className="text-sm font-black text-[color:var(--game-text)]">{destination.label}</div>
+                      <div className="pixel-chip px-2 py-1 text-[10px]">{getDestinationStatus(destination, snapshot.scene.id)}</div>
+                    </div>
+                    <p className="mt-2 text-sm leading-7 text-[color:var(--game-subtle)]">{destination.description}</p>
+                    {destination.collectibleHint && <p className="mt-2 text-xs leading-6 text-[color:var(--game-muted)]">Hint: {destination.collectibleHint}</p>}
+                    {!destination.available && destination.lockedReason && <p className="mt-2 text-xs leading-6 text-[color:var(--game-muted)]">Unlock: {destination.lockedReason}</p>}
+                  </div>
+                ))}
               </div>
-            )}
+              <p className="mt-4 text-xs leading-6 text-[color:var(--game-muted)]">
+                Open routes: {unlockedRoutes}/{snapshot.worldDestinations.length}
+              </p>
+            </div>
           </div>
         </section>
       </div>
 
       {snapshot.worldMapOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <button
-            type="button"
-            className="absolute inset-0 bg-[rgba(10,8,7,0.72)]"
-            aria-label="关闭世界导航"
-            onClick={() => sendCommand({ type: "setWorldMapOpen", open: false })}
-          />
+          <button type="button" className="absolute inset-0 bg-[rgba(10,8,7,0.72)]" aria-label="Close world navigation" onClick={() => sendCommand({ type: "setWorldMapOpen", open: false })} />
           <div className="relative z-[1] w-full max-w-3xl pixel-frame p-4 sm:p-5">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
                 <div className="font-display text-[11px] uppercase tracking-[0.35em] text-[color:var(--game-muted)]">World Routes</div>
-                <h2 className="mt-2 text-2xl font-black text-[color:var(--game-text)]">营地世界导航</h2>
+                <h2 className="mt-2 text-2xl font-black text-[color:var(--game-text)]">Expedition Navigation</h2>
                 <p className="mt-3 max-w-2xl text-sm leading-7 text-[color:var(--game-subtle)]">
-                  这里先承接前哨路牌。可进入区域会直接切场景，未开放区域先占位，后续只需要补 `scene definition` 就能继续扩世界。
+                  Route hints follow the current quest stage, so this board now acts like part of the playable mission flow instead of a static map.
                 </p>
               </div>
               <button type="button" className="pixel-button px-3 py-2 text-xs sm:text-sm" onClick={() => sendCommand({ type: "setWorldMapOpen", open: false })}>
-                关闭导航
+                Close routes
               </button>
             </div>
 
             <div className="mt-5 grid gap-3 sm:grid-cols-2">
               {snapshot.worldDestinations.map((destination) => {
-                const disabled = !destination.available || !destination.targetSceneId
-                const isCurrent = destination.targetSceneId === snapshot.scene.id
+                const disabled = !destination.available || destination.targetSceneId === snapshot.scene.id
                 return (
                   <button
                     key={destination.id}
                     type="button"
-                    disabled={disabled || isCurrent}
+                    disabled={disabled}
                     className="journal-tab disabled:cursor-not-allowed disabled:opacity-60"
-                    onClick={() => {
-                      if (!destination.targetSceneId) return
-                      sendCommand({ type: "transitionToScene", sceneId: destination.targetSceneId })
-                    }}
+                    onClick={() => sendCommand({ type: "transitionToScene", sceneId: destination.targetSceneId })}
                   >
-                    <span className="journal-tab__eyebrow">{disabled ? "Locked Route" : isCurrent ? "Current Zone" : "Open Route"}</span>
+                    <span className="journal-tab__eyebrow">{getDestinationStatus(destination, snapshot.scene.id)}</span>
                     <span className="mt-2 text-sm font-black text-[color:var(--game-ink)]">{destination.label}</span>
                     <span className="mt-2 text-xs leading-6 text-[color:var(--game-muted)]">{destination.description}</span>
+                    {destination.collectibleHint && <span className="mt-2 text-xs leading-6 text-[color:var(--game-muted)]">Hint: {destination.collectibleHint}</span>}
+                    {!destination.available && destination.lockedReason && <span className="mt-2 text-xs leading-6 text-[color:var(--game-muted)]">Unlock: {destination.lockedReason}</span>}
                   </button>
                 )
               })}
             </div>
           </div>
         </div>
+      )}
+
+      {snapshot.taskPanelOpen && (
+        <TaskPanel snapshot={snapshot} onClose={() => sendCommand({ type: "closeTaskPanel" })} onAcknowledgeDialogue={() => sendCommand({ type: "acknowledgeDialogue" })} />
       )}
 
       {section && (

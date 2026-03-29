@@ -10,53 +10,160 @@ function advance(store, seconds, step = 1 / 60) {
   }
 }
 
-test("room hotspot interaction walks to the object and opens the matching section", () => {
+test("camp keeper starts the quest, opens the task panel, and unlocks the ridge", () => {
   const store = createAdventureStore()
 
-  store.dispatch({ type: "interactHotspot", hotspotId: "games" })
-  advance(store, 4)
-
-  const snapshot = store.getSnapshot()
-  assert.equal(snapshot.activeSection, "games")
-  assert.equal(snapshot.sceneId, "room")
-  assert.equal(snapshot.inputLocked, true)
-})
-
-test("room exit moves the player to the outpost and preserves the scene switch state", () => {
-  const store = createAdventureStore()
-
-  store.dispatch({ type: "interactExit", exitId: "room-outpost" })
+  store.dispatch({ type: "transitionToScene", sceneId: "outpost" })
+  advance(store, 1)
+  store.dispatch({ type: "interactNpc", npcId: "camp-keeper" })
   advance(store, 6)
 
   const snapshot = store.getSnapshot()
   assert.equal(snapshot.sceneId, "outpost")
-  assert.equal(snapshot.transitionState.phase, "idle")
+  assert.equal(snapshot.taskPanelOpen, true)
+  assert.equal(snapshot.quest.currentStageId, "reach-ridge-scout")
+  assert.ok(snapshot.progress.unlockedScenes.includes("ridge"))
+  assert.ok(snapshot.progress.metNpcIds.includes("camp-keeper"))
 })
 
-test("outpost signpost opens the world map and exposes destination entries", () => {
+test("ridge flow requires scout conversation before cache collection", () => {
   const store = createAdventureStore()
 
   store.dispatch({ type: "transitionToScene", sceneId: "outpost" })
   advance(store, 1)
-  store.dispatch({ type: "interactHotspot", hotspotId: "world-map" })
-  advance(store, 3)
+  store.dispatch({ type: "interactNpc", npcId: "camp-keeper" })
+  advance(store, 4)
+  store.dispatch({ type: "closeTaskPanel" })
+  store.dispatch({ type: "transitionToScene", sceneId: "ridge" })
+  advance(store, 1)
+  store.dispatch({ type: "interactHotspot", hotspotId: "ridge-cache" })
+  const blockedSnapshot = store.getSnapshot()
+  assert.equal(blockedSnapshot.quest.currentStageId, "reach-ridge-scout")
+
+  store.dispatch({ type: "interactNpc", npcId: "ridge-scout" })
+  advance(store, 6)
+  store.dispatch({ type: "closeTaskPanel" })
+  store.dispatch({ type: "interactHotspot", hotspotId: "ridge-cache" })
+  advance(store, 7)
 
   const snapshot = store.getSnapshot()
-  assert.equal(snapshot.sceneId, "outpost")
-  assert.equal(snapshot.worldMapOpen, true)
-  assert.ok(snapshot.worldDestinations.length >= 3)
+  assert.equal(snapshot.quest.currentStageId, "report-to-camp")
+  assert.ok(snapshot.progress.collectedMemories.includes("ridge-cache"))
+  assert.equal(snapshot.worldDestinations.find((item) => item.targetSceneId === "shore")?.available, false)
 })
 
-test("dog runtime follows the player when the player walks away in the outpost", () => {
+test("reporting to camp unlocks the shore and final report completes the quest", () => {
   const store = createAdventureStore()
 
   store.dispatch({ type: "transitionToScene", sceneId: "outpost" })
   advance(store, 1)
+  store.dispatch({ type: "interactNpc", npcId: "camp-keeper" })
+  advance(store, 6)
+  store.dispatch({ type: "closeTaskPanel" })
+  store.dispatch({ type: "transitionToScene", sceneId: "ridge" })
+  advance(store, 1)
+  store.dispatch({ type: "interactNpc", npcId: "ridge-scout" })
+  advance(store, 6)
+  store.dispatch({ type: "closeTaskPanel" })
+  store.dispatch({ type: "interactHotspot", hotspotId: "ridge-cache" })
+  advance(store, 7)
+  store.dispatch({ type: "transitionToScene", sceneId: "outpost" })
+  advance(store, 1)
+  store.dispatch({ type: "interactNpc", npcId: "camp-keeper" })
+  advance(store, 6)
+  store.dispatch({ type: "closeTaskPanel" })
+  store.dispatch({ type: "transitionToScene", sceneId: "shore" })
+  advance(store, 1)
+  store.dispatch({ type: "interactNpc", npcId: "shore-listener" })
+  advance(store, 6)
+  store.dispatch({ type: "closeTaskPanel" })
+  store.dispatch({ type: "interactHotspot", hotspotId: "shore-memory" })
+  advance(store, 7)
+  store.dispatch({ type: "transitionToScene", sceneId: "outpost" })
+  advance(store, 1)
+  store.dispatch({ type: "interactNpc", npcId: "camp-keeper" })
+  advance(store, 6)
 
-  const before = store.getSnapshot().dog.currentTile
-  store.dispatch({ type: "moveToTile", target: { x: 14, y: 12 } })
-  advance(store, 3)
+  const snapshot = store.getSnapshot()
+  assert.equal(snapshot.quest.status, "completed")
+  assert.equal(snapshot.quest.currentStageId, null)
+  assert.ok(snapshot.progress.unlockedScenes.includes("shore"))
+  assert.ok(snapshot.progress.completedQuestStageIds.includes("final-report"))
+  assert.ok(snapshot.progress.collectedMemories.includes("shore-memory"))
+})
 
-  const after = store.getSnapshot().dog.currentTile
+test("task panel locks world input until closed", () => {
+  const store = createAdventureStore()
+
+  store.dispatch({ type: "transitionToScene", sceneId: "outpost" })
+  advance(store, 1)
+  store.dispatch({ type: "interactNpc", npcId: "camp-keeper" })
+  advance(store, 4)
+
+  const before = store.getSnapshot().player.currentTile
+  store.dispatch({ type: "moveToTile", target: { x: before.x + 2, y: before.y } })
+  advance(store, 1)
+
+  const locked = store.getSnapshot().player.currentTile
+  assert.deepEqual(locked, before)
+
+  store.dispatch({ type: "closeTaskPanel" })
+  store.dispatch({ type: "moveToTile", target: { x: before.x + 2, y: before.y } })
+  advance(store, 2)
+
+  const after = store.getSnapshot().player.currentTile
   assert.notDeepEqual(after, before)
+})
+
+test("environment cycle unlocks atmosphere achievements and scrapbook pages", () => {
+  const store = createAdventureStore()
+
+  store.dispatch({ type: "transitionToScene", sceneId: "outpost" })
+  advance(store, 61)
+
+  const snapshot = store.getSnapshot()
+  assert.equal(snapshot.environment.weather, "fog")
+  assert.ok(snapshot.progress.seenTimesOfDay.includes("night"))
+  assert.ok(snapshot.progress.unlockedAchievementIds.includes("night-watch"))
+  assert.ok(snapshot.progress.unlockedAchievementIds.includes("weather-reader"))
+  assert.ok(snapshot.progress.unlockedScrapbookEntryIds.includes("campfire-note"))
+})
+
+test("quest completion unlocks v3 route achievements and epilogue scrapbook", () => {
+  const store = createAdventureStore()
+
+  store.dispatch({ type: "transitionToScene", sceneId: "outpost" })
+  advance(store, 1)
+  store.dispatch({ type: "interactNpc", npcId: "camp-keeper" })
+  advance(store, 6)
+  store.dispatch({ type: "closeTaskPanel" })
+  store.dispatch({ type: "transitionToScene", sceneId: "ridge" })
+  advance(store, 1)
+  store.dispatch({ type: "interactNpc", npcId: "ridge-scout" })
+  advance(store, 6)
+  store.dispatch({ type: "closeTaskPanel" })
+  store.dispatch({ type: "interactHotspot", hotspotId: "ridge-cache" })
+  advance(store, 7)
+  store.dispatch({ type: "transitionToScene", sceneId: "outpost" })
+  advance(store, 1)
+  store.dispatch({ type: "interactNpc", npcId: "camp-keeper" })
+  advance(store, 6)
+  store.dispatch({ type: "closeTaskPanel" })
+  store.dispatch({ type: "transitionToScene", sceneId: "shore" })
+  advance(store, 1)
+  store.dispatch({ type: "interactNpc", npcId: "shore-listener" })
+  advance(store, 6)
+  store.dispatch({ type: "closeTaskPanel" })
+  store.dispatch({ type: "interactHotspot", hotspotId: "shore-memory" })
+  advance(store, 7)
+  store.dispatch({ type: "transitionToScene", sceneId: "outpost" })
+  advance(store, 1)
+  store.dispatch({ type: "interactNpc", npcId: "camp-keeper" })
+  advance(store, 6)
+
+  const snapshot = store.getSnapshot()
+  assert.ok(snapshot.progress.unlockedAchievementIds.includes("all-friends"))
+  assert.ok(snapshot.progress.unlockedAchievementIds.includes("memory-bearer"))
+  assert.ok(snapshot.progress.unlockedAchievementIds.includes("camp-complete"))
+  assert.ok(snapshot.progress.unlockedScrapbookEntryIds.includes("expedition-epilogue"))
 })
