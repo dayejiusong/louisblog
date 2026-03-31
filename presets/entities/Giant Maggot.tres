@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="EntityData" format=3 uid="uid://c4qa7tvyhgcnb"]
+
+[ext_resource type="Script" uid="uid://bsjkeucmohr0d" path="res://sources/cell/ItemCell.gd" id="1_5l8kn"]
+[ext_resource type="Script" uid="uid://mtjk83jdl176" path="res://sources/db/instance/EntityData.gd" id="2_gol0b"]
+
+[resource]
+script = ExtResource("2_gol0b")
+_id = 2624609623
+_name = "Giant Maggot"
+_spritePreset = "Generic4Directions"
+_collision = "Large"
+_radius = 25
+_stats = {
+"level": 1,
+"walkSpeed": 80.0
+}
+_equipment = Array[ExtResource("1_5l8kn")]([null, null, null, null, null, null, null, null])
+_customTexture = "sprites/monsters/maggot-giant.png"
+_skillSet = PackedInt64Array()
+_drops = PackedInt64Array()

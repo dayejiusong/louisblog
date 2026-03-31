@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="EntityData" format=3 uid="uid://b8tudlq86ibte"]
+
+[ext_resource type="Script" uid="uid://bsjkeucmohr0d" path="res://sources/cell/ItemCell.gd" id="1_dgo6c"]
+[ext_resource type="Script" uid="uid://mtjk83jdl176" path="res://sources/db/instance/EntityData.gd" id="2_iue6w"]
+[ext_resource type="Resource" uid="uid://beq7sopsha47h" path="res://presets/cells/items/chest/Gown.tres" id="2_u2vba"]
+[ext_resource type="Resource" uid="uid://b8awmxy22bpqi" path="res://presets/cells/items/legs/GuardCloudPants.tres" id="3_ym3au"]
+[ext_resource type="Resource" uid="uid://csskh68is28g8" path="res://presets/cells/items/feet/DaimBoots.tres" id="4_5kpg1"]
+[ext_resource type="Resource" uid="uid://cm42xtw8qw7i2" path="res://presets/cells/items/hands/GoldBracelets.tres" id="5_0cngs"]
+[ext_resource type="Resource" uid="uid://dixbmdwj253ee" path="res://presets/cells/items/head/TonoriCrown.tres" id="6_nym5j"]
+[ext_resource type="Resource" uid="uid://2kdlrccxo1mp" path="res://presets/entities/StaticNPC.tres" id="7_ym3au"]
+
+[resource]
+script = ExtResource("2_iue6w")
+_parent = ExtResource("7_ym3au")
+_id = 3662818686
+_name = "Red Queen"
+_spritePreset = "Player"
+_stats = {
+"gender": "Female",
+"haircolor": "Pure Platinum",
+"hairstyle": "Long and Curly",
+"level": 1,
+"race": "Kralog",
+"skintone": "Fire"
+}
+_equipment = Array[ExtResource("1_dgo6c")]([ExtResource("2_u2vba"), ExtResource("3_ym3au"), ExtResource("4_5kpg1"), ExtResource("5_0cngs"), ExtResource("6_nym5j"), null, null, null])
+_direction = 0
+_state = 2
+_skillSet = PackedInt64Array()
+_drops = PackedInt64Array()

@@ -1,0 +1,973 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Source of Mana\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Cancel"
+msgstr "取消"
+
+msgid "Tertiary"
+msgstr "第三项"
+
+msgid "Secondary"
+msgstr "第二项"
+
+msgid "Primary"
+msgstr "第一项"
+
+msgid "Name"
+msgstr "名称"
+
+msgid "Enter Character Name"
+msgstr "输入角色名"
+
+msgid "Attributes"
+msgstr "属性"
+
+msgid "Strength"
+msgstr "力量"
+
+msgid "Vitality"
+msgstr "体魄"
+
+msgid "Agility"
+msgstr "敏捷"
+
+msgid "Endurance"
+msgstr "耐力"
+
+msgid "Concentration"
+msgstr "专注"
+
+msgid "Stats"
+msgstr "属性"
+
+msgid "Level"
+msgstr "等级"
+
+msgid "Location"
+msgstr "位置"
+
+msgid "Previous"
+msgstr "上一个"
+
+msgid "Next"
+msgstr "下一步"
+
+msgid "Traits"
+msgstr "外观"
+
+msgid "Hairstyle"
+msgstr "发型"
+
+msgid "Hair Color"
+msgstr "发色"
+
+msgid "Gender"
+msgstr "性别"
+
+msgid "Race"
+msgstr "种族"
+
+msgid "Ethnicity"
+msgstr "种族"
+
+msgid "Skin Tone"
+msgstr "肤色"
+
+msgid "Drop"
+msgstr "丢弃"
+
+msgid "Unequip"
+msgstr "卸下"
+
+msgid "Equip"
+msgstr "装备"
+
+msgid "Use"
+msgstr "使用"
+
+msgid "Confirm"
+msgstr "确认"
+
+msgid "Equipment"
+msgstr "装备"
+
+msgid "Modifiers"
+msgstr "加成"
+
+msgid "Capacity"
+msgstr "容量"
+
+msgid "Weight"
+msgstr "重量"
+
+msgid "Slots"
+msgstr "格位"
+
+msgid "Loading..."
+msgstr "加载中..."
+
+msgid "Password"
+msgstr "密码"
+
+msgid "Current Password"
+msgstr "当前密码"
+
+msgid "New Password"
+msgstr "新密码"
+
+msgid "Confirm Password"
+msgstr "确认密码"
+
+msgid " Confirm Password"
+msgstr " 确认密码"
+
+msgid "Email"
+msgstr "邮箱"
+
+msgid "Reset Code"
+msgstr "重置码"
+
+msgid "Remember me"
+msgstr "记住我"
+
+msgid "Bestiary"
+msgstr "魔物图鉴"
+
+msgid "Any time spent in the real world is less time spent in the mana world!"
+msgstr "现实世界里度过的每一分钟，都是在玛娜世界里少待的一分钟！"
+
+msgid "Quit"
+msgstr "退出"
+
+msgid "Log Out"
+msgstr "登出"
+
+msgid "Stay"
+msgstr "留下"
+
+msgid "Respawn"
+msgstr "复活"
+
+msgid "Test"
+msgstr "测试"
+
+msgid "Lvl. 2"
+msgstr "2级"
+
+msgid "Refresh"
+msgstr "刷新"
+
+msgid "Preset"
+msgstr "预设"
+
+msgid "PC"
+msgstr "电脑"
+
+msgid "Mobile"
+msgstr "移动端"
+
+msgid "Visual"
+msgstr "画面"
+
+msgid "Fullscreen Mode"
+msgstr "全屏模式"
+
+msgid " Window Resolution"
+msgstr " 窗口分辨率"
+
+msgid " Scaling"
+msgstr " 缩放倍率"
+
+msgid "Action Overlay"
+msgstr "操作覆盖层"
+
+msgid "Effect"
+msgstr "特效"
+
+msgid "Lighting"
+msgstr "光照"
+
+msgid "High Quality Scale"
+msgstr "高质量缩放"
+
+msgid "Cathode Ray Tube"
+msgstr "CRT 扫描线"
+
+msgid "Global Volume"
+msgstr "总音量"
+
+msgid "Change Password"
+msgstr "修改密码"
+
+msgid " Current Password"
+msgstr " 当前密码"
+
+msgid " New Password"
+msgstr " 新密码"
+
+msgid "Available points"
+msgstr "可用点数"
+
+msgid "Reset"
+msgstr "重置"
+
+msgid "Save"
+msgstr "保存"
+
+msgid "Experience"
+msgstr "经验"
+
+msgid "Health"
+msgstr "生命"
+
+msgid "Mana"
+msgstr "法力"
+
+msgid "Stamina"
+msgstr "体力"
+
+msgid "Money"
+msgstr "金钱"
+
+msgid "Attack"
+msgstr "攻击"
+
+msgid "Defense"
+msgstr "防御"
+
+msgid "M. Attack"
+msgstr "魔法攻击"
+
+msgid "M. Defense"
+msgstr "魔法防御"
+
+msgid "Attack Range"
+msgstr "攻击距离"
+
+msgid "Cast Delay"
+msgstr "施法延迟"
+
+msgid "Cooldown Delay"
+msgstr "冷却延迟"
+
+msgid "Crit Rate"
+msgstr "暴击率"
+
+msgid "Dodge Rate"
+msgstr "闪避率"
+
+msgid "Walk Speed"
+msgstr "移动速度"
+
+msgid "Type here"
+msgstr "在这里输入"
+
+msgid "OK"
+msgstr "确定"
+
+msgid "Join our Discord"
+msgstr "加入我们的 Discord"
+
+msgid "Connect"
+msgstr "连接"
+
+msgid "Create Account"
+msgstr "创建账号"
+
+msgid "Refresh Connection"
+msgstr "刷新连接"
+
+msgid "Forgot Password"
+msgstr "忘记密码"
+
+msgid "Switch Online"
+msgstr "切换到在线"
+
+msgid "Switch Offline"
+msgstr "切换到离线"
+
+msgid "Playing Online"
+msgstr "在线模式"
+
+msgid "Playing Offline"
+msgstr "离线模式"
+
+msgid "Connecting..."
+msgstr "正在连接..."
+
+msgid "Send Code"
+msgstr "发送验证码"
+
+msgid "Reset Password"
+msgstr "重置密码"
+
+msgid "Create"
+msgstr "创建"
+
+msgid "Randomize"
+msgstr "随机"
+
+msgid "Select"
+msgstr "选择"
+
+msgid "New Player"
+msgstr "新角色"
+
+msgid "Delete Player"
+msgstr "删除角色"
+
+msgid "Description"
+msgstr "说明"
+
+msgid "Giver"
+msgstr "委托人"
+
+msgid "Target"
+msgstr "目标"
+
+msgid "Reward"
+msgstr "奖励"
+
+msgid "%s (%d kill)"
+msgstr "%s（击败 %d 次）"
+
+msgid "%s (%d kills)"
+msgstr "%s（击败 %d 次）"
+
+msgid "%s (Completed)"
+msgstr "%s（已完成）"
+
+msgid "Level: %d"
+msgstr "等级：%d"
+
+msgid "Welcome to %s"
+msgstr "欢迎来到 %s"
+
+msgid "Local"
+msgstr "本地"
+
+msgid "Global"
+msgstr "全局"
+
+msgid "Explore"
+msgstr "探索"
+
+msgid "Close"
+msgstr "关闭"
+
+msgid "Invalid token, enter your password"
+msgstr "令牌无效，请输入你的密码"
+
+msgid "Another connection happened with the same login."
+msgstr "相同账号已在另一处登录。"
+
+msgid "Invalid account name or password."
+msgstr "账号名或密码无效。"
+
+msgid "Password should only include alpha-numeric characters and symbols."
+msgstr "密码只能包含字母、数字和符号。"
+
+msgid "Password length should be inbetween %d and %d character long."
+msgstr "密码长度必须在 %d 到 %d 个字符之间。"
+
+msgid "Account name not available."
+msgstr "账号名不可用。"
+
+msgid "Name should should only include alpha-numeric characters and symbols."
+msgstr "名称只能包含字母、数字和符号。"
+
+msgid "Name length should be inbetween %d and %d character long."
+msgstr "名称长度必须在 %d 到 %d 个字符之间。"
+
+msgid "Passwords do not match."
+msgstr "两次输入的密码不一致。"
+
+msgid "Email is incorrect, please us a normal email format."
+msgstr "邮箱格式不正确，请使用正常的邮箱格式。"
+
+msgid "Password reset is not available on this server."
+msgstr "当前服务器不支持密码重置。"
+
+msgid "If this email is registered, a reset code has been sent. Check your inbox."
+msgstr "如果该邮箱已注册，重置码已发送，请查收邮箱。"
+
+msgid "Invalid or expired reset code."
+msgstr "重置码无效或已过期。"
+
+msgid "Password updated successfully. You can now log in."
+msgstr "密码更新成功，你现在可以登录了。"
+
+msgid "Could not connect to the server (Error %d).\nPlease contact us via our [url=%s][color=#%s]Discord server[/color][/url].\nMeanwhile be sure to test the offline mode!"
+msgstr "无法连接到服务器（错误 %d）。\n请通过我们的 [url=%s][color=#%s]Discord 服务器[/color][/url] 联系我们。\n同时也别忘了试试离线模式！"
+
+msgid "Character is already logged in."
+msgstr "该角色已经登录。"
+
+msgid "Could not connect to the server (Error %d)."
+msgstr "无法连接到服务器（错误 %d）。"
+
+msgid "Some character information are missing."
+msgstr "角色信息不完整。"
+
+msgid "Character name not available."
+msgstr "角色名不可用。"
+
+msgid "Unknown character issue (Error %d).\nPlease contact us via our [url=%s][color=#%s]Discord server[/color][/url].\n"
+msgstr "发生未知角色错误（错误 %d）。\n请通过我们的 [url=%s][color=#%s]Discord 服务器[/color][/url] 联系我们。\n"
+
+msgid "Password changed successfully."
+msgstr "密码修改成功。"
+
+msgid "Current password is incorrect."
+msgstr "当前密码不正确。"
+
+msgid "Current password is invalid."
+msgstr "当前密码无效。"
+
+msgid "New password length should be between %d and %d characters."
+msgstr "新密码长度必须在 %d 到 %d 个字符之间。"
+
+msgid "New password should only include alpha-numeric characters and symbols."
+msgstr "新密码只能包含字母、数字和符号。"
+
+msgid "New passwords do not match."
+msgstr "两次输入的新密码不一致。"
+
+msgid "Are you sure you want to delete this character?\nThis action is permanent, and you will not be able to recover or use this character again.\n"
+msgstr "你确定要删除这个角色吗？\n此操作是永久性的，删除后你将无法恢复或再次使用该角色。\n"
+
+msgid "Movement"
+msgstr "移动"
+
+msgid "Gameplay"
+msgstr "玩法"
+
+msgid "Interface"
+msgstr "界面"
+
+msgid "Context"
+msgstr "情境"
+
+msgid "System"
+msgstr "系统"
+
+msgid "Shortcuts"
+msgstr "快捷栏"
+
+msgid "Emotes"
+msgstr "表情"
+
+msgid "Keyboard"
+msgstr "键盘"
+
+msgid "Touch"
+msgstr "触控"
+
+msgid "Controller %d"
+msgstr "控制器 %d"
+
+msgid "Reset to Default"
+msgstr "恢复默认"
+
+msgid "Focus Next"
+msgstr "下一个焦点"
+
+msgid "Focus Previous"
+msgstr "上一个焦点"
+
+msgid "Page Up"
+msgstr "上翻页"
+
+msgid "Page Down"
+msgstr "下翻页"
+
+msgid "Home"
+msgstr "首页"
+
+msgid "End"
+msgstr "末页"
+
+msgid "Menu"
+msgstr "菜单"
+
+msgid "Sit"
+msgstr "坐下"
+
+msgid "Move Up"
+msgstr "向上移动"
+
+msgid "Move Down"
+msgstr "向下移动"
+
+msgid "Move Left"
+msgstr "向左移动"
+
+msgid "Move Right"
+msgstr "向右移动"
+
+msgid "Inventory Window"
+msgstr "背包窗口"
+
+msgid "Minimap Window"
+msgstr "小地图窗口"
+
+msgid "Chat Window"
+msgstr "聊天窗口"
+
+msgid "Validate"
+msgstr "确认"
+
+msgid "Click To"
+msgstr "点击移动"
+
+msgid "Screenshot"
+msgstr "截图"
+
+msgid "Interact"
+msgstr "交互"
+
+msgid "Emote Window"
+msgstr "表情窗口"
+
+msgid "Settings"
+msgstr "设置"
+
+msgid "Stat Window"
+msgstr "属性窗口"
+
+msgid "Progress Window"
+msgstr "进度窗口"
+
+msgid "Credits Window"
+msgstr "制作名单窗口"
+
+msgid "Toggle Fullscreen"
+msgstr "切换全屏"
+
+msgid "Shortcut 1"
+msgstr "快捷栏 1"
+
+msgid "Shortcut 2"
+msgstr "快捷栏 2"
+
+msgid "Shortcut 3"
+msgstr "快捷栏 3"
+
+msgid "Shortcut 4"
+msgstr "快捷栏 4"
+
+msgid "Shortcut 5"
+msgstr "快捷栏 5"
+
+msgid "Shortcut 6"
+msgstr "快捷栏 6"
+
+msgid "Shortcut 7"
+msgstr "快捷栏 7"
+
+msgid "Shortcut 8"
+msgstr "快捷栏 8"
+
+msgid "Shortcut 9"
+msgstr "快捷栏 9"
+
+msgid "Shortcut 10"
+msgstr "快捷栏 10"
+
+msgid "Clear Target"
+msgstr "清除目标"
+
+msgid "Pickup"
+msgstr "拾取"
+
+msgid "Run"
+msgstr "奔跑"
+
+msgid "Skill Window"
+msgstr "技能窗口"
+
+msgid "Accept"
+msgstr "接受"
+
+msgid "Context Validate"
+msgstr "情境确认"
+
+msgid "Context Cancel"
+msgstr "情境取消"
+
+msgid "Context Secondary"
+msgstr "情境次要操作"
+
+msgid "Context Tertiary"
+msgstr "情境第三操作"
+
+msgid "Zoom In"
+msgstr "放大"
+
+msgid "Zoom Out"
+msgstr "缩小"
+
+msgid "Reset Zoom"
+msgstr "重置缩放"
+
+msgid "Mouse Left"
+msgstr "鼠标左键"
+
+msgid "Mouse Right"
+msgstr "鼠标右键"
+
+msgid "Mouse Middle"
+msgstr "鼠标中键"
+
+msgid "Mouse Wheel Up"
+msgstr "鼠标滚轮上"
+
+msgid "Mouse Wheel Down"
+msgstr "鼠标滚轮下"
+
+msgid "Left Stick X"
+msgstr "左摇杆 X"
+
+msgid "Left Stick Y"
+msgstr "左摇杆 Y"
+
+msgid "Right Stick X"
+msgstr "右摇杆 X"
+
+msgid "Right Stick Y"
+msgstr "右摇杆 Y"
+
+msgid "Left Trigger"
+msgstr "左扳机"
+
+msgid "Right Trigger"
+msgstr "右扳机"
+
+msgid "Axis %d"
+msgstr "轴 %d"
+
+msgid "Back"
+msgstr "返回"
+
+msgid "Guide"
+msgstr "导览"
+
+msgid "Start"
+msgstr "开始"
+
+msgid "UP"
+msgstr "上"
+
+msgid "DOWN"
+msgstr "下"
+
+msgid "LEFT"
+msgstr "左"
+
+msgid "RIGHT"
+msgstr "右"
+
+msgid "Misc"
+msgstr "其他"
+
+msgid "Paddle1"
+msgstr "背键1"
+
+msgid "Paddle2"
+msgstr "背键2"
+
+msgid "Paddle3"
+msgstr "背键3"
+
+msgid "Paddle4"
+msgstr "背键4"
+
+msgid "Max Health"
+msgstr "最大生命"
+
+msgid "Max Mana"
+msgstr "最大法力"
+
+msgid "Max Stamina"
+msgstr "最大体力"
+
+msgid "Atk Range"
+msgstr "攻击距离"
+
+msgid "Cooldown"
+msgstr "冷却"
+
+msgid "HP Regen"
+msgstr "生命回复"
+
+msgid "MP Regen"
+msgstr "法力回复"
+
+msgid "SP Regen"
+msgstr "体力回复"
+
+msgid "Carry Weight"
+msgstr "携带重量"
+
+msgid "Unknown"
+msgstr "未知"
+
+msgid "Male"
+msgstr "男"
+
+msgid "Female"
+msgstr "女"
+
+msgid "Non Binary"
+msgstr "非二元"
+
+msgid "dodge"
+msgstr "闪避"
+
+msgid "miss"
+msgstr "未命中"
+
+msgid "%d xp"
+msgstr "%d 经验"
+
+msgid "%d GP"
+msgstr "%d 金币"
+
+msgid "Welcome to Source of Mana!\n\nYou're currently playing the web version, which may run slower and isn't as stable as the downloadable versions.\n\nThis version is mainly here to showcase the game.\nFor the best experience, we recommend using the native client found on our itch.io page (Available on Windows, Linux, macOS, and Android).\n"
+msgstr "欢迎来到 Mana 之源！\n\n你当前正在游玩网页版，它的运行速度可能更慢，稳定性也不如可下载的客户端版本。\n\n这个版本主要用于展示游戏内容。\n若想获得最佳体验，我们推荐你使用 itch.io 页面上的原生客户端版本（支持 Windows、Linux、macOS 和 Android）。\n"
+
+msgid "Welcome to Source of Mana!\n\nThis is an open-source MMORPG and still a work in progress. You're welcome to explore, test, and enjoy the current features.\n\nWe're also always looking for contributors!\nIf you'd like to get involved in development, design, writing, or testing, feel free to join our community.\nOtherwise, have fun and thank you for playing!\n"
+msgstr "欢迎来到 Mana 之源！\n\n这是一款开源 MMORPG，目前仍在持续开发中。欢迎你来探索、测试并体验现阶段的内容。\n\n我们也一直在寻找新的贡献者！\n如果你想参与开发、设计、文案或测试，欢迎加入我们的社区。\n无论如何，祝你玩得开心，也感谢你的游玩！\n"
+
+msgid "You are dead."
+msgstr "你死了。"
+
+msgid "We regret to inform you that your character was killed in battle."
+msgstr "很遗憾地通知你，你的角色在战斗中阵亡了。"
+
+msgid "You are not that alive anymore."
+msgstr "你现在已经不怎么活着了。"
+
+msgid "Game Over!"
+msgstr "游戏结束！"
+
+msgid "Insert coin to continue."
+msgstr "请投币继续。"
+
+msgid "No, kids. Your character did not really die. It... err... went to a better place."
+msgstr "别担心，孩子。你的角色并不是真的死了。它……呃……去了一个更好的地方。"
+
+msgid "You've outlived your usefulness. Mommy now wants you to help with supper."
+msgstr "你的作用已经到头了。妈妈现在要你去帮忙准备晚饭。"
+
+msgid "I guess this did not run too well."
+msgstr "看来这次运行得不太顺利。"
+
+msgid "You are no more."
+msgstr "你已经不复存在。"
+
+msgid "You have ceased to be."
+msgstr "你已经停止存在。"
+
+msgid "You've expired and gone to meet your maker."
+msgstr "你已寿终正寝，去见你的造物主了。"
+
+msgid "You're a stiff."
+msgstr "你已经是一具僵硬的尸体了。"
+
+msgid "Bereft of life, you rest in peace."
+msgstr "失去生命后，你终于安息了。"
+
+msgid "If you weren't so animated, you'd be pushing up the daisies."
+msgstr "要不是你刚才还活蹦乱跳，现在早该在地下顶花了。"
+
+msgid "You're off the twig."
+msgstr "你已经从枝头掉下去了。"
+
+msgid "You've kicked the bucket."
+msgstr "你已经一命呜呼。"
+
+msgid "You are an ex-player."
+msgstr "你现在是前玩家了。"
+
+msgid "Right now, you would just love to be resurrected."
+msgstr "你现在一定非常想复活。"
+
+msgid "Wait, did I just die?"
+msgstr "等等，我刚刚死了吗？"
+
+msgid "What just happened?"
+msgstr "刚才发生了什么？"
+
+msgid "I guess you're not the One."
+msgstr "看来你并不是那个天选之人。"
+
+msgid "See you in the underworld."
+msgstr "冥界见。"
+
+msgid "Try again."
+msgstr "再试一次。"
+
+msgid "Don't panic, you're just a bit dead."
+msgstr "别慌，你只是稍微死了一点。"
+
+msgid "It's a bit late to start digging your grave, don't you think?"
+msgstr "现在才开始给自己挖坟，是不是有点晚了？"
+
+msgid "Program terminated."
+msgstr "程序已终止。"
+
+msgid "Mission failed."
+msgstr "任务失败。"
+
+msgid "Do you want your possessions identified?"
+msgstr "你想鉴定一下自己的遗物吗？"
+
+msgid "Sadly, no trace of you was ever found..."
+msgstr "遗憾的是，再也没有人找到过你的踪迹……"
+
+msgid "Annihilated."
+msgstr "灰飞烟灭。"
+
+msgid "Dying is easy. Living is harder."
+msgstr "死亡很容易，活着更难。"
+
+msgid "Looks like you got your head handed to you."
+msgstr "看起来你被打得找不着北了。"
+
+msgid "You screwed up again, dump your body down the tubes and get you another one."
+msgstr "你又搞砸了，把这副身体扔进下水道，再换一具吧。"
+
+msgid "You're not dead yet. You're just resting."
+msgstr "你还没死，你只是躺着休息一下。"
+
+msgid "Everybody falls the first time."
+msgstr "每个人第一次都会倒下。"
+
+msgid "Welcome... to the real world."
+msgstr "欢迎……来到真实世界。"
+
+msgid "Fate, it seems, is not without a sense of irony."
+msgstr "看来命运也不是毫无讽刺感。"
+
+msgid "There is no spoon."
+msgstr "根本没有勺子。"
+
+msgid "One shot, one kill."
+msgstr "一枪一个。"
+
+msgid "Some men just want to watch the world burn."
+msgstr "有些人只是想看着世界燃烧。"
+
+msgid "You are fulfilling your destiny."
+msgstr "你正在完成自己的宿命。"
+
+msgid "Rule #8: Do not die."
+msgstr "第 8 条规则：别死。"
+
+msgid "There will be no order, only chaos."
+msgstr "不会有秩序，只有混乱。"
+
+msgid "Too bad, get over it."
+msgstr "真遗憾，接受现实吧。"
+
+msgid "There's no hope for us here, only death."
+msgstr "这里没有希望，只有死亡。"
+
+msgid "Death is the road to awe."
+msgstr "死亡是通往敬畏之路。"
+
+msgid "Stop... Stop it!"
+msgstr "停下……快停下！"
+
+msgid "Today is a good day to die."
+msgstr "今天是个赴死的好日子。"
+
+msgid "Any last words? Oops, too late!"
+msgstr "还有什么遗言吗？哦，太晚了！"
+
+msgid "Confusion will be my epitaph."
+msgstr "混乱将成为我的墓志铭。"
+
+msgid "KO"
+msgstr "击倒"
+
+msgid "GG"
+msgstr "GG"
+
+msgid "Better luck next time."
+msgstr "下次好运。"
+
+msgid "Everything is a dream."
+msgstr "一切都只是一场梦。"
+
+msgid "Oh dear, the RNG is angry with you again."
+msgstr "哎呀，随机数女神又生你的气了。"
+
+msgid "Well... That happens, I guess."
+msgstr "嗯……这种事嘛，也会发生。"
+
+msgid "That is just part of life-- err, death, I mean."
+msgstr "这只是人生的一部分，呃，我是说死亡的一部分。"
+
+msgid "Are you enjoying lying on the ground?"
+msgstr "你躺在地上的感觉还舒服吗？"
+
+msgid "Today is not your lucky day, it seems."
+msgstr "看来今天不是你的幸运日。"
+
+msgid "Dead already? But you were so young..."
+msgstr "这么快就死了？可你还这么年轻……"
+
+msgid "Next time, say thanks when you get off the bus."
+msgstr "下次下车的时候记得说谢谢。"
+
+msgid "Walk towards the light."
+msgstr "朝着光走去吧。"
+
+msgid "And thus, you return to dust; Fulfilling the prophecy."
+msgstr "于是你归于尘土，完成了预言。"
+
+msgid "Do you want your noob certificate now or later?"
+msgstr "你的菜鸟证书想现在领还是晚点领？"
+
+msgid "One Tap."
+msgstr "一枪爆头。"
+
+msgid "Wasted"
+msgstr "报废"
+
+msgid "Critical Existence Failure."
+msgstr "存在发生致命错误。"
+
+msgid "If you see an elevator, be sure to push the up button."
+msgstr "如果你看到电梯，记得按上行键。"
+
+msgid "Well, that healing item was too awesome to use, anyway..."
+msgstr "反正那件治疗道具也好用得舍不得用……"
+
+msgid "Hey hey, I wasn't done yet!"
+msgstr "嘿嘿，我还没结束呢！"
+
+msgid "Why you bully me!"
+msgstr "你为什么欺负我！"
+
+msgid "The cake is a lie."
+msgstr "蛋糕是个谎言。"
+
+msgid "It is good day to be not dead!"
+msgstr "今天真是个适合不死的好日子！"
+
+msgid "Well poop. Let's try not dying next time."
+msgstr "糟了。下次试着别死吧。"
+
+msgid "Outgunned."
+msgstr "火力被压制。"
+
+msgid "If I try to get away, how long until I'm free? And if I don't come back here, will anyone remember me?"
+msgstr "如果我试着逃离，要多久才能真正自由？如果我再也回不来了，还会有人记得我吗？"

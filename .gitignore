@@ -1,32 +1,20 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+*.DS_Store
+android/*
+binary/*
+build/*
+publishing/*
 
-# dependencies
-/node_modules
+# imported files
+.godot/*
+presets/maps/*
 
-# next.js
-/.next/
-/out/
+# addons
+~*.dll
 
-# production
-/build
+# linux env
+.mono
 
-# debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.pnpm-debug.log*
+.vscode
 
-# env files
-.env*
-
-# vercel
-.vercel
-
-# typescript
-*.tsbuildinfo
-next-env.d.ts
-
-# local workflow artifacts
-progress.md
-room-after-canvas-click.png
-room-home.png
+# tmp files
+*.tmp

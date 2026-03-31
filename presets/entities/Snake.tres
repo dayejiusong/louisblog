@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="EntityData" format=3 uid="uid://cp6d2t2w0v4h2"]
+
+[ext_resource type="Script" uid="uid://bsjkeucmohr0d" path="res://sources/cell/ItemCell.gd" id="1_q84qv"]
+[ext_resource type="Script" uid="uid://mtjk83jdl176" path="res://sources/db/instance/EntityData.gd" id="2_dfnee"]
+
+[resource]
+script = ExtResource("2_dfnee")
+_id = 236646007
+_name = "Snake"
+_spritePreset = "Generic4Directions"
+_collision = "Medium"
+_radius = 16
+_stats = {
+"castAttackDelay": 0.5,
+"level": 1,
+"walkSpeed": 170.0
+}
+_equipment = Array[ExtResource("1_q84qv")]([null, null, null, null, null, null, null, null])
+_customTexture = "sprites/monsters/snake.png"
+_behaviour = 4
+_skillSet = PackedInt64Array()
+_drops = PackedInt64Array()

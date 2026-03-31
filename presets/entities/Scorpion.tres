@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="EntityData" format=3 uid="uid://7bcrmgajbnpg"]
+
+[ext_resource type="Script" uid="uid://bsjkeucmohr0d" path="res://sources/cell/ItemCell.gd" id="1_exyli"]
+[ext_resource type="Script" uid="uid://mtjk83jdl176" path="res://sources/db/instance/EntityData.gd" id="2_arwd3"]
+
+[resource]
+script = ExtResource("2_arwd3")
+_id = 3842739378
+_name = "Scorpion"
+_spritePreset = "Generic4Directions"
+_collision = "Medium"
+_radius = 18
+_stats = {
+"level": 1,
+"walkSpeed": 60.0
+}
+_equipment = Array[ExtResource("1_exyli")]([null, null, null, null, null, null, null, null])
+_customTexture = "sprites/monsters/scorpion.png"
+_skillSet = PackedInt64Array()
+_drops = PackedInt64Array()

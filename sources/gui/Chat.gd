@@ -1,0 +1,85 @@
+extends VBoxContainer
+class_name ChatContainer
+
+@onready var tabContainer : TabContainer		= $ChatTabContainer
+@onready var lineEdit : LineEdit				= $NewText
+
+@onready var tabInstance : Control				= FileSystem.LoadGui("labels/ChatLabel", false)
+@onready var backlog : ChatBacklog				= ChatBacklog.new()
+
+var enabledLastFrame : bool						= false
+
+#
+func AddPlayerText(channelID : GUICommons.ChatChannel, playerName : String, speech : String):
+	AddText(channelID, playerName, UICommons.PlayerNameToColor(playerName))
+	AddText(channelID, ": " + speech + "\n", UICommons.LightTextColor)
+
+func AddSystemText(speech : String):
+	AddText(GUICommons.ChatChannel.Local, Localization.Text(speech) + "\n", UICommons.TextColor)
+
+func AddText(channelID : GUICommons.ChatChannel, speech : String, color : Color):
+	if tabContainer:
+		var tab : Control = tabContainer.get_tab_control(channelID)
+		if tab and tab is RichTextLabel:
+			tab.text += "[color=#" + color.to_html(false) + "]" + speech + "[/color]"
+
+func isNewLineEnabled() -> bool:
+	return lineEdit.is_visible() and lineEdit.has_focus() if lineEdit else false
+
+func SetNewLineEnabled(enable : bool):
+	if Launcher.Action and lineEdit and not enabledLastFrame:
+		enabledLastFrame = true
+		if not LauncherCommons.isMobile:
+			lineEdit.set_visible(enable)
+			Launcher.Action.Enable(!enable)
+		if enable:
+			lineEdit.grab_focus()
+
+#
+func OnNewTextSubmitted(newText : String):
+	if lineEdit:
+		if newText.is_empty() == false:
+			lineEdit.clear()
+			if Launcher.Player:
+				backlog.Add(newText)
+				if newText[0] == "/":
+					Network.TriggerCommand(newText.trim_prefix("/"))
+				else:
+					Network.TriggerChat(newText, tabContainer.get_current_tab())
+				SetNewLineEnabled(false)
+		else:
+			SetNewLineEnabled(false)
+
+#
+func _input(event : InputEvent):
+	if FSM.IsGameState() and isNewLineEnabled():
+		if Launcher.Action.TryJustPressed(event, "ui_cancel", true):
+			SetNewLineEnabled(false)
+		elif Launcher.Action.TryJustPressed(event, "ui_up", true):
+			backlog.Up()
+			lineEdit.text = backlog.Get()
+			lineEdit.set_caret_column(lineEdit.text.length())
+
+		elif Launcher.Action.TryJustPressed(event, "ui_down", true):
+			backlog.Down()
+			lineEdit.text = backlog.Get()
+			lineEdit.set_caret_column(lineEdit.text.length())
+		elif Launcher.Action.TryJustPressed(event, "ui_validate", true):
+			OnNewTextSubmitted(lineEdit.text)
+
+func _physics_process(_delta):
+	if enabledLastFrame:
+		enabledLastFrame = false
+
+func _ready():
+	for tabIndex in tabContainer.get_tab_count():
+		var tab : Control = tabContainer.get_tab_control(tabIndex)
+		if tab:
+			Localization.DisableAutoTranslate(tab)
+	tabContainer.set_tab_title(GUICommons.ChatChannel.Local, Localization.Text("Local"))
+	tabContainer.set_tab_title(GUICommons.ChatChannel.Global, Localization.Text("Global"))
+	var placeholder : String = Localization.Text("Type here")
+	Localization.DisableAutoTranslate(lineEdit)
+	lineEdit.placeholder_text = placeholder
+	AddText(GUICommons.ChatChannel.Local, Localization.Format("Welcome to %s", [LauncherCommons.ProjectName]) + "\n", UICommons.TextColor)
+	SetNewLineEnabled(false)

@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="EntityData" format=3 uid="uid://0ellynuhm24c"]
+
+[ext_resource type="Script" uid="uid://bsjkeucmohr0d" path="res://sources/cell/ItemCell.gd" id="1_f0h6j"]
+[ext_resource type="Script" uid="uid://mtjk83jdl176" path="res://sources/db/instance/EntityData.gd" id="2_mr4dg"]
+
+[resource]
+script = ExtResource("2_mr4dg")
+_id = 2450367875
+_name = "Sludge Slime"
+_spritePreset = "SlimeSludge"
+_collision = "Medium"
+_radius = 10
+_stats = {
+"level": 1,
+"walkSpeed": 50.0
+}
+_equipment = Array[ExtResource("1_f0h6j")]([null, null, null, null, null, null, null, null])
+_customTexture = "sprites/monsters/slime-sludge.png"
+_behaviour = 130
+_skillSet = PackedInt64Array()
+_drops = PackedInt64Array()

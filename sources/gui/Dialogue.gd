@@ -1,0 +1,108 @@
+extends VBoxContainer
+
+#
+@onready var button : TouchScreenButton	= $BottomVbox/Dialogue/Button/TouchButton
+@onready var buttonLabel : Label		= $BottomVbox/Dialogue/Button/Label
+@onready var scrollable : Scrollable	= $BottomVbox/Dialogue/FixedHBox/Scrollable
+@onready var scrollbar: VScrollBar		= $BottomVbox/Dialogue/FixedHBox/Scrollable/Scroll/_v_scroll
+var lastName : String					= ""
+var lastTween : Tween					= null
+var currentButtonAction : String		= ""
+
+const PlayerNameLabel : PackedScene		= preload("res://presets/gui/labels/PlayerNameLabel.tscn")
+const NPCNameLabel : PackedScene		= preload("res://presets/gui/labels/NpcNameLabel.tscn")
+const PlayerDialogueLabel : PackedScene	= preload("res://presets/gui/labels/PlayerDialogueLabel.tscn")
+
+#
+func Toggle(toggle : bool):
+	if toggle:
+		Launcher.GUI.DisplayInfoContext(["ui_accept", "ui_cancel"])
+		Launcher.GUI.dialogueWindow.Clear()
+	else:
+		Launcher.GUI.infoContext.FadeOut()
+
+	Launcher.GUI.dialogueContainer.set_visible(toggle)
+
+func AddName(text : String):
+	if lastName != text:
+		lastName = text
+		var label : RichTextLabel = PlayerNameLabel.instantiate() if lastName == Launcher.Player.nick else NPCNameLabel.instantiate()
+		var displayName : String = lastName if lastName == Launcher.Player.nick else Localization.Text(lastName)
+		Localization.DisableAutoTranslate(label)
+		label.text = "[color=#" + UICommons.LightTextColor.to_html(false) + "]" + displayName + "[/color]"
+		scrollable.textContainer.add_child.call_deferred(label)
+
+func AddDialogue(text : String):
+	var isPlayer : bool = lastName == Launcher.Player.nick
+	var label : RichTextLabel = PlayerDialogueLabel.instantiate() if isPlayer else Scrollable.contentLabel.instantiate()
+	Localization.DisableAutoTranslate(label)
+	label.text = "[color=#" + UICommons.TextColor.to_html(false) + "]" + Localization.Text(text) + "[/color]"
+	scrollable.textContainer.add_child.call_deferred(label)
+
+	if not isPlayer:
+		var textSize : int = label.text.length()
+		label.visible_characters = 0
+		if lastTween:
+			lastTween.custom_step(INF)
+		lastTween = create_tween()
+		lastTween.tween_property(label, "visible_characters", textSize, textSize * UICommons.DialogueTextSpeed)
+		lastTween.tween_callback(DialogueDisplayed)
+
+func DialogueDisplayed():
+	lastTween = null
+
+func AutoScroll():
+	scrollbar.value = scrollbar.max_value
+
+func ToggleButton(enable : bool, text : String):
+	if enable and lastTween:
+		await lastTween.finished
+	currentButtonAction = text if enable else ""
+	button.set_visible(enable)
+	buttonLabel.set_text(Localization.Text(text))
+
+func ButtonPressed():
+	if lastTween:
+		lastTween.custom_step(INF)
+		return
+
+	if Launcher.Player:
+		Network.TriggerNextContext()
+	if currentButtonAction == "Close":
+		Launcher.GUI.dialogueContainer.set_visible(false)
+
+func Clear():
+	scrollable.Clear()
+	lastName = ""
+	currentButtonAction = ""
+	button.set_visible(false)
+
+func AddChoices(choices : PackedStringArray):
+	if lastTween:
+		await lastTween.finished
+
+	ToggleButton(false, "")
+	Launcher.GUI.choiceContext.Clear()
+
+	var choicesCount : int = choices.size()
+	if choicesCount > 0:
+		Launcher.GUI.choiceContext.Push(ContextData.new("ui_context_validate", choices[0], Network.TriggerChoice.bind(0)))
+	if choicesCount > 1:
+		Launcher.GUI.choiceContext.Push(ContextData.new("ui_context_cancel", choices[1], Network.TriggerChoice.bind(1)))
+	if choicesCount > 2:
+		Launcher.GUI.choiceContext.Push(ContextData.new("ui_context_secondary", choices[2], Network.TriggerChoice.bind(2)))
+	if choicesCount > 3:
+		Launcher.GUI.choiceContext.Push(ContextData.new("ui_context_tertiary", choices[3], Network.TriggerChoice.bind(3)))
+	Launcher.GUI.choiceContext.FadeIn(true)
+
+# Overloaded functions
+func _ready():
+	Localization.DisableAutoTranslate(buttonLabel)
+	scrollbar.changed.connect(AutoScroll)
+
+func _input(event : InputEvent):
+	if Launcher.GUI and Launcher.GUI.IsDialogueContextOpened() and not Launcher.GUI.choiceContext.is_visible():
+		if Launcher.Action.TryJustPressed(event, "ui_accept", true):
+			ButtonPressed()
+		if Launcher.Action.TryJustPressed(event, "ui_cancel", true):
+			Network.TriggerCloseContext()

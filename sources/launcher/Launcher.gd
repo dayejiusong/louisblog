@@ -1,0 +1,181 @@
+extends Node
+
+# Common singletons
+var Root : Node						= null
+var Scene : Node2D					= null
+
+# Client services
+var Action : ServiceBase			= null
+var Audio : AudioStreamPlayer		= null
+var GUI : ServiceBase				= null
+var Debug : ServiceBase				= null
+var Camera : ServiceBase			= null
+var Map : ServiceBase				= null
+
+# Server services
+var World : ServiceBase				= null
+var SQL : ServiceBase				= null
+var Discord : ServiceBase			= null
+var Email : EmailService			= null
+
+# Accessors
+var Player : Entity					= null
+var LocalPlayerName : String			= ""
+
+# Signals
+signal launchModeUpdated
+
+#
+func Mode(launchClient : bool = false, launchServer : bool = false) -> bool:
+	var isClientConnected : bool = Network.Client != null
+	var isServerConnected : bool = Network.ENetServer != null or Network.WebSocketServer != null
+	if isClientConnected == launchClient and isServerConnected == launchServer:
+		return false
+
+	Launcher.Reset(false, false)
+	Network.Destroy()
+	if launchClient:	Client()
+	if launchServer:	Server()
+	Network.Mode(launchClient, launchServer)
+
+	_post_launch()
+	launchModeUpdated.emit(launchClient, launchServer)
+	return true
+
+func Client():
+	if OS.is_debug_build():
+		Debug		= FileSystem.LoadSource("debug/Debug.gd")
+
+	# Load then low-prio services on which the order is not important
+	Action			= FileSystem.LoadSource("input/Action.gd", "Action")
+	Camera			= FileSystem.LoadSource("camera/Camera.gd")
+	Map				= FileSystem.LoadSource("map/Map.gd")
+
+	add_child.call_deferred(Action)
+
+func Server():
+	World			= FileSystem.LoadSource("world/World.gd", "World")
+	SQL				= FileSystem.LoadSource("sql/WebSQL.gd", "SQL") if LauncherCommons.IsWebSinglePlayer() else FileSystem.LoadSource("sql/SQL.gd", "SQL")
+	if not LauncherCommons.IsWebSinglePlayer():
+		Discord		= FileSystem.LoadSource("discord/Discord.gd", "Discord")
+		Email		= EmailService.new()
+
+	add_child.call_deferred(World)
+	add_child.call_deferred(SQL)
+	if Discord:
+		add_child.call_deferred(Discord)
+	if Email:
+		add_child.call_deferred(Email)
+
+func Reset(clientStarted : bool, serverStarted : bool):
+	if not clientStarted:
+		if Debug:
+			Debug.Destroy()
+			Debug.queue_free()
+			Debug = null
+		if Action:
+			Action.set_name("ActionDestroyed")
+			Action.Destroy()
+			Action.queue_free()
+			Action = null
+		if Camera:
+			Camera.Destroy()
+			Camera.queue_free()
+			Camera = null
+		if Map:
+			Map.Destroy()
+			Map.queue_free()
+			Map = null
+		if GUI:
+			GUI.Destroy()
+			# GUI is not cleared, but all signals should be re-connected
+		if Network.Client:
+			Network.Client.Destroy()
+			Network.Client = null
+		if Player:
+			Player.queue_free()
+			Player = null
+		LocalPlayerName = ""
+
+	if not serverStarted:
+		if Network.ENetServer:
+			Network.ENetServer.Destroy()
+			Network.ENetServer = null
+		if Network.WebSocketServer:
+			Network.WebSocketServer.Destroy()
+			Network.WebSocketServer = null
+		if World:
+			World.set_name("WorldDestroyed")
+			World.Destroy()
+			World.queue_free()
+			World = null
+		if SQL:
+			SQL.set_name("SQLDestroyed")
+			SQL.Destroy()
+			SQL.queue_free()
+			SQL = null
+		if Discord:
+			Discord.set_name("DiscordDestroyed")
+			Discord.Destroy()
+			Discord.queue_free()
+			Discord = null
+		if Email:
+			Email.queue_free()
+			Email = null
+
+func Quit():
+	Reset(false, false)
+	Network.Destroy()
+	Root.remove_child(Scene)
+	Scene.free()
+	Network.free()
+	get_tree().quit()
+
+#
+func _ready():
+	var startClient : bool = false
+	var startServer : bool = false
+
+	TranslationServer.set_locale(Localization.DefaultLocale)
+	Root = get_tree().get_root()
+	if Root:
+		Root.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_ALWAYS
+
+	if "--server" in OS.get_cmdline_args():
+		Scene = FileSystem.LoadResource(Path.Pst + "Server" + Path.SceneExt)
+		Root.add_child.call_deferred(Scene)
+		Engine.set_max_fps(LauncherCommons.ServerMaxFPS)
+		Engine.set_physics_ticks_per_second(LauncherCommons.ServerMaxFPS)
+		startServer = true
+	else:
+		Scene = FileSystem.LoadResource(Path.Pst + "Client" + Path.SceneExt)
+		Root.add_child.call_deferred(Scene)
+		GUI = Scene.get_node("Canvas")
+		Audio = Scene.get_node("Audio")
+		startClient = true
+		startServer = LauncherCommons.IsWebSinglePlayer() or (not LauncherCommons.isWeb and OS.is_debug_build())
+	Conf.Init()
+
+	if not Root or not Scene:
+		printerr("Could not initialize source's base services")
+		Quit()
+
+	DB.Init()
+	Mode(startClient, startServer)
+	await Scene.ready
+
+	_post_launch()
+
+# Call _post_launch functions for service depending on other services
+func _post_launch():
+	if Camera and not Camera.isInitialized:		Camera._post_launch()
+	if Map and not Map.isInitialized:			Map._post_launch()
+	if GUI and not GUI.isInitialized:			GUI._post_launch()
+	if Debug and not Debug.isInitialized:		Debug._post_launch()
+	if World and not World.isInitialized:		World._post_launch()
+	if SQL and not SQL.isInitialized:			SQL._post_launch()
+	if Discord and not Discord.isInitialized:	Discord._post_launch()
+	if Audio:									Audio._post_launch()
+
+func _quit():
+	Quit()

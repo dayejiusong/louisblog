@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="EntityData" format=3 uid="uid://c1bvpf3i07drl"]
+
+[ext_resource type="Script" uid="uid://bsjkeucmohr0d" path="res://sources/cell/ItemCell.gd" id="1_cptef"]
+[ext_resource type="Script" uid="uid://mtjk83jdl176" path="res://sources/db/instance/EntityData.gd" id="2_jxq6m"]
+
+[resource]
+script = ExtResource("2_jxq6m")
+_id = 2469123693
+_name = "Drain Slime"
+_spritePreset = "Slime"
+_collision = "Medium"
+_radius = 10
+_stats = {
+"level": 1,
+"walkSpeed": 70.0
+}
+_equipment = Array[ExtResource("1_cptef")]([null, null, null, null, null, null, null, null])
+_customTexture = "sprites/monsters/slime-drain.png"
+_behaviour = 130
+_skillSet = PackedInt64Array()
+_drops = PackedInt64Array()

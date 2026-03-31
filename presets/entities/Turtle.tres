@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="EntityData" format=3 uid="uid://cxxqd4v8rgvai"]
+
+[ext_resource type="Script" uid="uid://bsjkeucmohr0d" path="res://sources/cell/ItemCell.gd" id="1_t7tku"]
+[ext_resource type="Script" uid="uid://mtjk83jdl176" path="res://sources/db/instance/EntityData.gd" id="2_dqej7"]
+
+[resource]
+script = ExtResource("2_dqej7")
+_id = 3562408837
+_name = "Turtle"
+_spritePreset = "Turtle"
+_collision = "Medium"
+_radius = 10
+_stats = {
+"attack": 1,
+"defense": 10,
+"level": 1,
+"walkSpeed": 30.0
+}
+_equipment = Array[ExtResource("1_t7tku")]([null, null, null, null, null, null, null, null])
+_skillSet = PackedInt64Array()
+_drops = PackedInt64Array()

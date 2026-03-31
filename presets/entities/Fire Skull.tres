@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="EntityData" format=3 uid="uid://bikb3w38m8nli"]
+
+[ext_resource type="Script" uid="uid://bsjkeucmohr0d" path="res://sources/cell/ItemCell.gd" id="1_akvej"]
+[ext_resource type="Script" uid="uid://mtjk83jdl176" path="res://sources/db/instance/EntityData.gd" id="2_yfu84"]
+
+[resource]
+script = ExtResource("2_yfu84")
+_id = 4234567318
+_name = "Fire Skull"
+_spritePreset = "Skull"
+_collision = "Medium"
+_radius = 12
+_stats = {
+"level": 10,
+"walkSpeed": 50.0
+}
+_equipment = Array[ExtResource("1_akvej")]([null, null, null, null, null, null, null, null])
+_customTexture = "sprites/monsters/skull-fire.png"
+_behaviour = 4
+_skillSet = PackedInt64Array(2089110122)
+_skillProba = Dictionary[int, float]({
+2089110122: 1.0
+})
+_drops = PackedInt64Array()

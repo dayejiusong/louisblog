@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="EntityData" format=3 uid="uid://dwt0h62w27an2"]
+
+[ext_resource type="Script" uid="uid://bsjkeucmohr0d" path="res://sources/cell/ItemCell.gd" id="1_kbsb8"]
+[ext_resource type="Resource" uid="uid://2kdlrccxo1mp" path="res://presets/entities/StaticNPC.tres" id="2_02rcd"]
+[ext_resource type="Script" uid="uid://mtjk83jdl176" path="res://sources/db/instance/EntityData.gd" id="2_yh3w3"]
+
+[resource]
+script = ExtResource("2_yh3w3")
+_parent = ExtResource("2_02rcd")
+_id = 3325600555
+_name = "Elanore"
+_stats = {
+"gender": "Female",
+"level": 1,
+"race": "Human",
+"skintone": "Tanned"
+}
+_equipment = Array[ExtResource("1_kbsb8")]([null, null, null, null, null, null, null, null])
+_customTexture = "sprites/npcs/elanore.png"
+_skillSet = PackedInt64Array()
+_drops = PackedInt64Array()

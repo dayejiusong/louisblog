@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="BaseCell" format=3 uid="uid://crkbqpybsuf5k"]
+
+[ext_resource type="Texture2D" uid="uid://dqet6tg4kd201" path="res://data/graphics/emotes/smile.png" id="1_iaobf"]
+[ext_resource type="Script" uid="uid://cxsn36lpngjtj" path="res://sources/cell/BaseCell.gd" id="2_m5drp"]
+
+[resource]
+script = ExtResource("2_m5drp")
+id = 236618815
+name = "Smile"
+icon = ExtResource("1_iaobf")
+type = 1
+weight = 0.0
+usable = true

@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="BaseCell" format=3 uid="uid://cgrqyncaq222k"]
+
+[ext_resource type="Texture2D" uid="uid://bgl1ltru8str0" path="res://data/graphics/emotes/sad.png" id="1_urjaa"]
+[ext_resource type="Script" uid="uid://cxsn36lpngjtj" path="res://sources/cell/BaseCell.gd" id="2_aytxq"]
+
+[resource]
+script = ExtResource("2_aytxq")
+id = 193470685
+name = "Sad"
+icon = ExtResource("1_urjaa")
+type = 1
+weight = 0.0
+usable = true

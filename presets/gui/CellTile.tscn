@@ -1,0 +1,80 @@
+[gd_scene format=3 uid="uid://cq76gfx44nn6q"]
+
+[ext_resource type="Script" uid="uid://t24avk2vmd2j" path="res://sources/gui/CellTile.gd" id="1_ec554"]
+[ext_resource type="Theme" uid="uid://dhb6h35g1bk0x" path="res://data/themes/DefaultTheme.tres" id="1_nr8t2"]
+[ext_resource type="Shader" uid="uid://cgqu7co137s38" path="res://sources/shaders/ShineHighlight.gdshader" id="3_8kgog"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_neqro"]
+resource_local_to_scene = true
+shader = ExtResource("3_8kgog")
+shader_parameter/shine_color = Color(1, 1, 1, 1)
+shader_parameter/shine_size = 0.15
+shader_parameter/shine_angle = 18.0
+shader_parameter/progress = -1.0
+shader_parameter/modulate = Color(1, 1, 1, 1)
+
+[node name="Background" type="ColorRect" unique_id=482211116 groups=["CellTile"]]
+custom_minimum_size = Vector2(34, 34)
+offset_right = 32.0
+offset_bottom = 32.0
+theme = ExtResource("1_nr8t2")
+color = Color(0.32549, 0.305882, 0.290196, 1)
+script = ExtResource("1_ec554")
+
+[node name="Icon" type="TextureRect" parent="." unique_id=2008480799]
+material = SubResource("ShaderMaterial_neqro")
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -16.0
+offset_top = -16.0
+offset_right = 16.0
+offset_bottom = 16.0
+grow_horizontal = 2
+grow_vertical = 2
+focus_mode = 1
+mouse_filter = 2
+stretch_mode = 3
+
+[node name="Count" type="Label" parent="." unique_id=1876621040]
+layout_mode = 0
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -33.0
+offset_top = -19.0
+offset_bottom = 3.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 2
+horizontal_alignment = 2
+vertical_alignment = 2
+clip_text = true
+
+[node name="Cooldown" type="Label" parent="." unique_id=599918860]
+layout_mode = 0
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -33.0
+offset_top = -19.0
+offset_bottom = 3.0
+grow_horizontal = 0
+grow_vertical = 0
+theme = ExtResource("1_nr8t2")
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+clip_text = true
+
+[connection signal="focus_entered" from="." to="." method="_on_focus_entered"]
+[connection signal="focus_exited" from="." to="." method="_on_focus_exited"]
+[connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]

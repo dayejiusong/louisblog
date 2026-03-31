@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="ItemCell" format=3 uid="uid://bwrcrcl0jsblc"]
+
+[ext_resource type="Texture2D" uid="uid://doh3dawrse2jw" path="res://data/graphics/items/usable/bottle-water.png" id="1_fl4k2"]
+[ext_resource type="Script" uid="uid://hdd6y6syvlm6" path="res://sources/actor/stat/StatModifier.gd" id="2_aigdi"]
+[ext_resource type="Script" uid="uid://btqmbqq2q7cm8" path="res://sources/cell/CellModifier.gd" id="3_lqbcw"]
+[ext_resource type="Script" uid="uid://bsjkeucmohr0d" path="res://sources/cell/ItemCell.gd" id="4_6ukje"]
+
+[sub_resource type="Resource" id="Resource_qi6b5"]
+script = ExtResource("2_aigdi")
+_effect = 1
+_value = 20.0
+metadata/_custom_type_script = "uid://hdd6y6syvlm6"
+
+[sub_resource type="Resource" id="Resource_t00vx"]
+script = ExtResource("3_lqbcw")
+_modifiers = Array[ExtResource("2_aigdi")]([SubResource("Resource_qi6b5")])
+metadata/_custom_type_script = "uid://btqmbqq2q7cm8"
+
+[resource]
+script = ExtResource("4_6ukje")
+id = 3288439794
+name = "Water Bottle"
+description = "A simple bottle filled with clear water."
+icon = ExtResource("1_fl4k2")
+weight = 50.0
+stackable = true
+usable = true
+modifiers = SubResource("Resource_t00vx")

@@ -1,0 +1,41 @@
+[remap]
+
+importer="font_data_dynamic"
+type="FontFile"
+uid="uid://shxh5secawoq"
+path="res://.godot/imported/alagard-16.ttf-30b4546841ab6ed511ad5bfd14589572.fontdata"
+
+[deps]
+
+source_file="res://data/graphics/fonts/alagard-16.ttf"
+dest_files=["res://.godot/imported/alagard-16.ttf-30b4546841ab6ed511ad5bfd14589572.fontdata"]
+
+[params]
+
+Rendering=null
+antialiasing=1
+generate_mipmaps=false
+disable_embedded_bitmaps=true
+multichannel_signed_distance_field=false
+msdf_pixel_range=8
+msdf_size=48
+allow_system_fallback=true
+force_autohinter=false
+modulate_color_glyphs=false
+hinting=1
+subpixel_positioning=1
+keep_rounding_remainders=true
+oversampling=0.0
+Fallbacks=null
+fallbacks=[Resource("uid://vxfyk1pwr7y8", "res://data/graphics/fonts/DejaVuSans.ttf")]
+Compress=null
+compress=true
+preload=[{
+"chars": [],
+"glyphs": [],
+"name": "New Configuration",
+"size": Vector2i(16, 0)
+}]
+language_support={}
+script_support={}
+opentype_features={}

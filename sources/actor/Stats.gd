@@ -1,0 +1,235 @@
+extends RefCounted
+class_name ActorStats
+
+# Public and private stats, can be initialized through a dictionary from a SQL query or entities.json
+var level : int							= 0
+var experience : int					= 0
+var gp : int							= 0
+var health : int						= ActorCommons.MaxStatValue
+var mana : int							= ActorCommons.MaxStatValue
+var stamina : int						= ActorCommons.MaxStatValue
+var karma : int							= 0
+var weight : float						= 0.0
+var hairstyle : int						= DB.UnknownHash
+var haircolor : int						= DB.UnknownHash
+var gender : int						= ActorCommons.Gender.MALE
+var race : int							= DB.UnknownHash
+var skintone : int						= DB.UnknownHash
+var shape : int							= DB.UnknownHash
+var spirit : int						= DB.UnknownHash
+var currentShape : int					= DB.UnknownHash
+var baseExp : int						= 1
+var isRunning : bool					= false
+
+# Attributes
+var strength : int						= 0
+var vitality : int						= 0
+var agility : int						= 0
+var endurance : int						= 0
+var concentration : int					= 0
+
+# Entity Stats
+var entityStat : BaseStats				= BaseStats.new()
+var morphStat : BaseStats				= BaseStats.new()
+var current : BaseStats					= BaseStats.new()
+var actor : Actor						= null
+var modifiers : CellModifier			= CellModifier.new()
+
+# Regen deltas
+var deltaHealth : float					= 0.0
+var deltaMana : float					= 0.0
+var deltaStamina : float				= 0.0
+
+# Signals
+signal vital_stats_updated
+signal attributes_updated
+signal entity_stats_updated
+
+#
+func RefreshVitalStats():
+	health					= Formula.ClampHealth(self)
+	stamina					= Formula.ClampStamina(self)
+	mana					= Formula.ClampMana(self)
+	vital_stats_updated.emit()
+
+func RefreshRegenStats():
+	current.regenHealth		= Formula.GetRegenHealth(self)
+	current.regenMana		= Formula.GetRegenMana(self)
+	current.regenStamina	= Formula.GetRegenStamina(self)
+
+func RefreshEntityStats():
+	# Current Stats
+	current.maxHealth		= Formula.GetMaxHealth(self)
+	current.maxMana			= Formula.GetMaxMana(self)
+	current.maxStamina		= Formula.GetMaxStamina(self)
+	current.attack			= Formula.GetAttack(self)
+	current.attackRange		= Formula.GetAttackRange(self)
+	current.mattack			= Formula.GetMAttack(self)
+	current.defense			= Formula.GetDefense(self)
+	current.mdefense		= Formula.GetMDefense(self)
+	current.critRate		= Formula.GetCritRate(self)
+	current.dodgeRate		= Formula.GetDodgeRate(self)
+	current.castAttackDelay	= Formula.GetCastAttackDelay(self)
+	current.cooldownAttackDelay = Formula.GetCooldownAttackDelay(self)
+	current.walkSpeed		= Formula.GetWalkSpeed(self)
+	current.weightCapacity	= Formula.GetWeightCapacity(self)
+	entity_stats_updated.emit()
+
+	RefreshVitalStats()
+	RefreshRegenStats()
+
+func RefreshAttributes():
+	RefreshEntityStats()
+	attributes_updated.emit()
+
+#
+func SetStats(stats : Dictionary):
+	for statName in stats:
+		if stats[statName] != null and statName in self:
+			self[statName] = stats[statName]
+
+	if actor.type == ActorCommons.Type.MONSTER:
+		FillRandomAttributes()
+	RefreshAttributes()
+
+#
+func SetEntityStats(newStats : Dictionary):
+	for modifier in newStats:
+		if modifier in entityStat:
+			entityStat[modifier] = newStats[modifier]
+			morphStat[modifier] = entityStat[modifier]
+	RefreshEntityStats()
+
+func SetMorphStats(newStats : Dictionary):
+	for modifier in newStats:
+		if modifier in morphStat:
+			morphStat[modifier] = (entityStat[modifier] + newStats[modifier]) / 2 if IsMorph() else newStats[modifier]
+	RefreshEntityStats()
+
+#
+func Init(actorNode : Actor, data : EntityData):
+	assert(actorNode != null, "Caller actor node should never be null")
+	actor = actorNode
+
+	var stats : Dictionary = data._stats
+	shape	= data._id
+	currentShape = shape
+
+	SetStats(stats)
+	SetEntityStats(stats)
+	RefreshVitalStats()
+
+func FillRandomAttributes():
+	var maxPoints : int			= Formula.GetMaxAttributePoints(level)
+	var assignedPoints : int	= Formula.GetAssignedAttributePoints(self)
+	if maxPoints > assignedPoints:
+		const attributeNames = ["strength", "vitality", "agility", "endurance", "concentration"]
+		var attributes : Dictionary = {}
+		var pointToDispatch : int = maxPoints - assignedPoints
+		for att in attributeNames:
+			var points : int = randi_range(0, pointToDispatch)
+			pointToDispatch -= points
+			attributes[att] = self[att] + points
+			if pointToDispatch == 0:
+				break
+		SetStats(attributes)
+
+func Morph(data : EntityData):
+	currentShape = data._id
+	SetMorphStats(data._stats)
+
+func IsMorph() -> bool:
+	return currentShape != shape
+
+func IsSailing() -> bool:
+	return currentShape == DB.ShipHash
+
+func AddAttribute(attribute : ActorCommons.Attribute):
+	match attribute:
+		ActorCommons.Attribute.STRENGTH:
+			strength = min(ActorCommons.MaxPointPerAttributes, strength + 1)
+		ActorCommons.Attribute.VITALITY:
+			vitality = min(ActorCommons.MaxPointPerAttributes, vitality + 1)
+		ActorCommons.Attribute.AGILITY:
+			agility = min(ActorCommons.MaxPointPerAttributes, agility + 1)
+		ActorCommons.Attribute.ENDURANCE:
+			endurance = min(ActorCommons.MaxPointPerAttributes, endurance + 1)
+		ActorCommons.Attribute.CONCENTRATION:
+			concentration = min(ActorCommons.MaxPointPerAttributes, concentration + 1)
+	RefreshAttributes()
+
+func ReduceAttribute(attribute : ActorCommons.Attribute):
+	match attribute:
+		ActorCommons.Attribute.STRENGTH:
+			strength = max(0, strength - 1)
+		ActorCommons.Attribute.VITALITY:
+			vitality = max(0, vitality - 1)
+		ActorCommons.Attribute.AGILITY:
+			agility = max(0, agility - 1)
+		ActorCommons.Attribute.ENDURANCE:
+			endurance = max(0, endurance - 1)
+		ActorCommons.Attribute.CONCENTRATION:
+			concentration = max(0, concentration - 1)
+	RefreshAttributes()
+
+func SetAttributes(newStrength: int, newVitality: int, newAgility: int, newEndurance: int, newConcentration: int):
+	if newStrength < strength or newVitality < vitality or newAgility < agility \
+			or newEndurance < endurance or newConcentration < concentration:
+		return
+
+	var newAssignedAttributePoints: int = newStrength + newVitality + newAgility \
+			+ newEndurance + newConcentration
+	if Formula.GetMaxAttributePoints(level) - newAssignedAttributePoints >= 0:
+		strength = min(ActorCommons.MaxPointPerAttributes, newStrength)
+		vitality = min(ActorCommons.MaxPointPerAttributes, newVitality)
+		agility = min(ActorCommons.MaxPointPerAttributes, newAgility)
+		endurance = min(ActorCommons.MaxPointPerAttributes, newEndurance)
+		concentration = min(ActorCommons.MaxPointPerAttributes, newConcentration)
+		RefreshAttributes()
+
+func SetHealth(bonus : int):
+	var previousHealth : int = health
+	health = clampi(health + bonus, 0, current.maxHealth)
+	vital_stats_updated.emit()
+	if health <= 0 and previousHealth > 0:
+		actor.Killed()
+
+func SetMana(bonus : int):
+	mana = clampi(mana + bonus, 0, current.maxMana)
+	vital_stats_updated.emit()
+
+func SetStamina(bonus : int):
+	stamina = clampi(stamina + bonus, 0, current.maxStamina)
+	vital_stats_updated.emit()
+
+func AddExperience(value : int):
+	if not ActorCommons.IsAlive(actor) or value <= 0:
+		return
+	experience += value
+	# Manage level up
+	var experiencelNeeded = Experience.GetNeededExperienceForNextLevel(level)
+	while experiencelNeeded != Experience.MAX_LEVEL_REACHED and experience >= experiencelNeeded:
+		experience -= experiencelNeeded
+		level += 1
+		experiencelNeeded = Experience.GetNeededExperienceForNextLevel(level)
+	vital_stats_updated.emit()
+	if actor is PlayerAgent:
+		Network.TargetAlteration(actor.get_rid().get_id(), actor.get_rid().get_id(), value, ActorCommons.Alteration.EXP, DB.UnknownHash, actor.peerID)
+
+func AddGP(value : int):
+	if not ActorCommons.IsAlive(actor) or value <= 0:
+		return
+	gp += value
+	vital_stats_updated.emit()
+	if actor is PlayerAgent:
+		Network.TargetAlteration(actor.peerID, actor.peerID, value, ActorCommons.Alteration.GP, DB.UnknownHash, actor.peerID)
+
+func SetHairstyle(newStyle : int):
+	if DB.HairstylesDB.has(newStyle):
+		hairstyle = newStyle
+		vital_stats_updated.emit()
+
+func SetHaircolor(newColor : int):
+	if DB.PalettesDB[DB.Palette.HAIR].has(newColor):
+		haircolor = newColor
+		vital_stats_updated.emit()

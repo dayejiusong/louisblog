@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="EntityData" format=3 uid="uid://btr1usjm7uktm"]
+
+[ext_resource type="Script" uid="uid://bsjkeucmohr0d" path="res://sources/cell/ItemCell.gd" id="1_no8py"]
+[ext_resource type="Script" uid="uid://mtjk83jdl176" path="res://sources/db/instance/EntityData.gd" id="2_exyrv"]
+
+[resource]
+script = ExtResource("2_exyrv")
+_id = 2089075532
+_name = "Emil"
+_spritePreset = "Slime"
+_collision = "Medium"
+_radius = 10
+_stats = {
+"level": 1,
+"walkSpeed": 40.0
+}
+_equipment = Array[ExtResource("1_no8py")]([null, null, null, null, null, null, null, null])
+_customTexture = "sprites/monsters/emil.png"
+_behaviour = 146
+_skillSet = PackedInt64Array()
+_drops = PackedInt64Array()

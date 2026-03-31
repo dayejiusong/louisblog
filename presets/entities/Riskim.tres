@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="EntityData" format=3 uid="uid://cklx132pwgpk8"]
+
+[ext_resource type="Script" uid="uid://bsjkeucmohr0d" path="res://sources/cell/ItemCell.gd" id="1_ogvrf"]
+[ext_resource type="Script" uid="uid://mtjk83jdl176" path="res://sources/db/instance/EntityData.gd" id="2_6g8wa"]
+[ext_resource type="Resource" uid="uid://2kdlrccxo1mp" path="res://presets/entities/StaticNPC.tres" id="2_jvyv1"]
+
+[resource]
+script = ExtResource("2_6g8wa")
+_parent = ExtResource("2_jvyv1")
+_id = 3469933044
+_name = "Riskim"
+_stats = {
+"gender": "Male",
+"level": 1,
+"race": "Raijin",
+"skintone": "Light"
+}
+_equipment = Array[ExtResource("1_ogvrf")]([null, null, null, null, null, null, null, null])
+_customTexture = "sprites/npcs/riskim.png"
+_skillSet = PackedInt64Array()
+_drops = PackedInt64Array()

@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="EntityData" format=3 uid="uid://dle132272116a"]
+
+[ext_resource type="Script" uid="uid://bsjkeucmohr0d" path="res://sources/cell/ItemCell.gd" id="1_ignr6"]
+[ext_resource type="Script" uid="uid://mtjk83jdl176" path="res://sources/db/instance/EntityData.gd" id="2_1l7jc"]
+
+[resource]
+script = ExtResource("2_1l7jc")
+_id = 228176527
+_name = "Lilah"
+_spritePreset = "Slime"
+_collision = "Medium"
+_radius = 10
+_stats = {
+"level": 1,
+"walkSpeed": 40.0
+}
+_equipment = Array[ExtResource("1_ignr6")]([null, null, null, null, null, null, null, null])
+_customTexture = "sprites/monsters/lilah.png"
+_behaviour = 146
+_skillSet = PackedInt64Array()
+_drops = PackedInt64Array()

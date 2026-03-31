@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="EntityData" format=3 uid="uid://b2ixl1ll023yw"]
+
+[ext_resource type="Script" uid="uid://bsjkeucmohr0d" path="res://sources/cell/ItemCell.gd" id="1_redhg"]
+[ext_resource type="Script" uid="uid://mtjk83jdl176" path="res://sources/db/instance/EntityData.gd" id="2_0sv1b"]
+[ext_resource type="Resource" uid="uid://2kdlrccxo1mp" path="res://presets/entities/StaticNPC.tres" id="2_l55s7"]
+
+[resource]
+script = ExtResource("2_0sv1b")
+_parent = ExtResource("2_l55s7")
+_id = 193475306
+_name = "Wie"
+_stats = {
+"gender": "Female",
+"level": 1,
+"race": "Raijin",
+"skintone": "Light"
+}
+_equipment = Array[ExtResource("1_redhg")]([null, null, null, null, null, null, null, null])
+_customTexture = "sprites/npcs/wie.png"
+_skillSet = PackedInt64Array()
+_drops = PackedInt64Array()

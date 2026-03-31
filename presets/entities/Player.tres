@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="EntityData" format=3 uid="uid://cilso856bq6of"]
+
+[ext_resource type="Script" uid="uid://bsjkeucmohr0d" path="res://sources/cell/ItemCell.gd" id="1_amg8s"]
+[ext_resource type="Script" uid="uid://mtjk83jdl176" path="res://sources/db/instance/EntityData.gd" id="2_c6ynp"]
+
+[resource]
+script = ExtResource("2_c6ynp")
+_id = 3394588274
+_name = "Player"
+_spritePreset = "Player"
+_collision = "Medium"
+_radius = 20
+_stats = {
+"level": 1,
+"walkSpeed": 160.0
+}
+_equipment = Array[ExtResource("1_amg8s")]([null, null, null, null, null, null, null, null])
+_displayName = true
+_behaviour = 0
+_skillSet = PackedInt64Array()
+_drops = PackedInt64Array()

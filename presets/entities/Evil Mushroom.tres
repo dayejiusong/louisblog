@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="EntityData" format=3 uid="uid://df650vwlxw5v7"]
+
+[ext_resource type="Script" uid="uid://bsjkeucmohr0d" path="res://sources/cell/ItemCell.gd" id="1_de2dy"]
+[ext_resource type="Script" uid="uid://mtjk83jdl176" path="res://sources/db/instance/EntityData.gd" id="2_aovmb"]
+
+[resource]
+script = ExtResource("2_aovmb")
+_id = 2866154511
+_name = "Evil Mushroom"
+_spritePreset = "Generic4Directions"
+_collision = "Medium"
+_radius = 16
+_stats = {
+"level": 1,
+"walkSpeed": 80.0
+}
+_equipment = Array[ExtResource("1_de2dy")]([null, null, null, null, null, null, null, null])
+_customTexture = "sprites/monsters/mushroom-evil.png"
+_skillSet = PackedInt64Array()
+_drops = PackedInt64Array()

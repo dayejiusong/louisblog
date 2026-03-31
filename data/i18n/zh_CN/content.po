@@ -1,0 +1,202 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Source of Mana\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Account Policies"
+msgstr "账号政策"
+
+msgid "Code of Conduct"
+msgstr "行为准则"
+
+msgid "Game Rules"
+msgstr "游戏规则"
+
+msgid "Privacy and Security"
+msgstr "隐私与安全"
+
+msgid "Enforcement and Disclaimers"
+msgstr "执行与免责声明"
+
+msgid "Communication Guidelines"
+msgstr "沟通规范"
+
+msgid "Additional Notes"
+msgstr "补充说明"
+
+msgid "By registering for and using any of Source of Mana鈥檚 services, including game servers and related platforms, you agree to the following terms. These policies are designed to ensure a safe, respectful, and enjoyable community for everyone.\n"
+msgstr "当你注册并使用 Source of Mana 的任何服务，包括游戏服务器及相关平台时，即表示你同意以下条款。这些政策旨在为每个人营造一个安全、互相尊重且愉快的社区环境。\n"
+
+msgid "- [b]Respect and Cooperation[/b]: Treat all contributors, players, and staff members with respect. Disagreements should be handled constructively, with an attitude of mutual understanding.\n- [b]Inclusivity[/b]: Everyone is welcome, regardless of their background. Discrimination or harassment of any kind will not be tolerated.\n- [b]Responsibility[/b]: Staff members are volunteers and represent the organization. Mistakes can happen; learning and improvement are part of the process.- [b]Positive Engagement[/b]: Foster a positive environment through open communication, tolerance, and cooperation.\n"
+msgstr "- [b]尊重与合作[/b]：请尊重所有贡献者、玩家和工作人员。分歧应以建设性的方式处理，并以相互理解为前提。\n- [b]包容性[/b]：无论背景如何，所有人都受欢迎。任何形式的歧视或骚扰都不会被容忍。\n- [b]责任[/b]：工作人员均为志愿者，代表项目组织。犯错在所难免，学习与改进也是过程的一部分。\n- [b]积极参与[/b]：通过开放沟通、包容和合作，共同营造积极的环境。\n"
+
+msgid "- [b]No AFK Botting[/b]: Automation of gameplay while away from the keyboard is prohibited.\n- [b]Language and Names[/b]: Offensive or inappropriate language and character names are not allowed.\n- [b]Spam-Free Environment[/b]: Avoid chat flooding, trade spamming, or any disruptive behavior.\n- [b]Speak English in Public Areas[/b]: Use English in public chats to promote inclusivity, except in private messages or among groups with a shared language.\n- [b]No Begging[/b]: Politely ask for help or items only once. Avoid annoying or pestering others.\n- [b]No Multiboxing[/b]: Controlling multiple characters in combat simultaneously is forbidden.\n- [b]Social Convention[/b]: Follow the broader community guidelines available at [url]https://policies.themanaworld.org/tsc[/url].\n"
+msgstr "- [b]禁止挂机脚本[/b]：离开键盘时使用自动化进行游戏是被禁止的。\n- [b]语言与名称[/b]：不得使用冒犯性或不恰当的语言及角色名。\n- [b]保持无刷屏环境[/b]：请避免刷聊天、刷交易信息或其他扰乱行为。\n- [b]公共区域请使用英语[/b]：为促进包容性，公共聊天请尽量使用英语；私聊或同语言小群体交流除外。\n- [b]禁止乞讨[/b]：礼貌地请求帮助或物品一次即可，请勿反复纠缠他人。\n- [b]禁止多开作战[/b]：禁止同时操控多个角色参与战斗。\n- [b]社区公约[/b]：请遵守 [url]https://policies.themanaworld.org/tsc[/url] 上提供的更广泛社区准则。\n"
+
+msgid "- [b]Account Protection[/b]: Use a strong, unique password and do not share it. No moderator, admin, or any person representing Source of Mana will ever ask for your password.\n- [b]Personal Information[/b]: Avoid sharing private or sensitive information in public spaces. Exercise caution to prevent exploitation.\n- [b]Emails for Account Identification[/b]: Your email address may be used to identify your account for password resets.\n- [b]Data Collection[/b]: We collect standard information (e.g. IP address, email) to prevent fraud, analyze trends, and maintain services.\n- [b]Account Termination[/b]: You may request the deletion of personal data. However, some information, such as logs or contributions, may be anonymized or retained to protect the integrity of the community.\n"
+msgstr "- [b]账号保护[/b]：请使用强度高且唯一的密码，不要与他人分享。任何版主、管理员或代表 Source of Mana 的人员都不会索要你的密码。\n- [b]个人信息[/b]：请避免在公共场合分享私人或敏感信息，并保持谨慎以防被利用。\n- [b]邮箱用于账号识别[/b]：你的邮箱地址可能会用于账号识别及密码重置。\n- [b]数据收集[/b]：我们会收集标准信息（如 IP 地址、邮箱）以防止欺诈、分析趋势并维护服务。\n- [b]账号终止[/b]：你可以申请删除个人数据。但为了维护社区完整性，部分信息（如日志或贡献记录）可能会被匿名化或保留。\n"
+
+msgid "- [b]Ban Policy[/b]: Bans apply to individuals, not just accounts. Attempts to evade bans may result in the immediate suspension of any associated accounts.\n- [b]Rule Changes[/b]: Rules may be updated periodically. Notices will be provided via updated platform pages and welcome announcements within the client.\n- [b]Compliance with Laws[/b]: Source of Mana operates under U.S. law. Illegal activities in the game are prohibited.\n- [b]Staff Authority[/b]: Failure to comply with Game Master (GM) instructions may be considered a rule violation.\n"
+msgstr "- [b]封禁政策[/b]：封禁针对的是个人，而不仅仅是账号。试图规避封禁可能导致所有关联账号被立即停用。\n- [b]规则变更[/b]：规则可能会定期更新。相关通知会通过平台页面更新及客户端欢迎公告发布。\n- [b]遵守法律[/b]：Source of Mana 受美国法律约束，游戏内禁止任何违法行为。\n- [b]工作人员权限[/b]：拒不遵守游戏管理员（GM）指示的行为，可能会被视为违规。\n"
+
+msgid "- Be polite and patient, especially when dealing with language barriers.\n- Avoid using all capital letters (perceived as shouting).\n- Use proper grammar to facilitate clear communication.\n- Report game bugs and abuse to support the community.\n"
+msgstr "- 保持礼貌与耐心，尤其是在面对语言障碍时。\n- 请避免全大写输入（容易被视作大喊）。\n- 尽量使用清晰规范的语句，便于沟通。\n- 发现游戏漏洞或违规行为时，请及时反馈以帮助社区。\n"
+
+msgid "- Source of Mana is an entity under *Software in the Public Interest, Inc.*.\n- For further questions about policies, please contact us through [url=https://discord.com/invite/UnY77dR]Discord[/url] or [url=https://web.libera.chat/?channels=#sourceofmana]IRC[/url]."
+msgstr "- Source of Mana 隶属于 *Software in the Public Interest, Inc.*。\n- 如对政策有进一步疑问，请通过 [url=https://discord.com/invite/UnY77dR]Discord[/url] 或 [url=https://web.libera.chat/?channels=#sourceofmana]IRC[/url] 联系我们。"
+
+msgid "Welcome to Source of Mana!"
+msgstr "欢迎来到 Source of Mana！"
+
+msgid "\tSource of Mana is a 2D MMORPG using Godot to provide a modern player experience for a classic style of game that never really goes out of fashion.\nIn Source of Mana you can live your medieval fantasy RPG adventure with friends and explore a world of magical tales and just pure silly fun.\n\nWe are still in the very early stages of development and updates will come soon.\nStay tuned and join us on Discord or IRC to discuss the project!\n"
+msgstr "\tSource of Mana 是一款使用 Godot 打造的 2D MMORPG，旨在为这种永不过时的经典游戏风格带来更现代的玩家体验。\n在 Source of Mana 中，你可以与朋友一起展开中世纪奇幻 RPG 冒险，探索充满魔法故事与纯粹欢乐的世界。\n\n我们仍处于开发的 very early stages，后续更新将很快到来。\n欢迎持续关注，并加入我们的 Discord 或 IRC 一起讨论这个项目！\n"
+
+msgid "Version 0.8"
+msgstr "版本 0.8"
+
+msgid "Persistent World & Accounts:\n[ul]A fully functional account and character creation system.\nCustomize your character with over 15 new hairstyles and 20 hair colors.\nProgress is now saved thanks to a new SQL backend: quests, inventory, stats, and more.\nNew advanced server UI for better online world management.[/ul]\n\nExploration & Lore:\n[ul]Four new cave maps in the Tonori desert, including Sandstorm Mines and Snake Pit Caves.\n15+ new monsters introduced to populate these dangerous areas.\nEarly development of Tulimshar, a new city planned for the next milestone.[/ul]\n\nUser Interface:\n[ul]New login/account creation and character selection/customization screens.\nNew progress window combining a quest log and a bestiary.\nRedesigned inventory, minimap, and player stats interfaces.[/ul]\n\nCombat & Equipment:\n[ul]New zone-based projectiles and improved targeting logic.\nMonsters drop items on death.\nAdvanced inventory system: stacking, equipment slots, stat modifiers.\nOver 25 new equipment items added, with visible gear on your character sprite.[/ul]\n\nInfrastructure & Tech:\n[ul]WebSocket support for itch.io and browser play.\nSecure login system with password hashing and TLS.\nSwitched from GitLab to GitHub for centralized development.\nOngoing CI/CD automation within GitHub Actions.[/ul]\n\nThis release marks a major step toward a persistent and evolving world.\nThank you for playing! Tulimshar and more await in the next milestone.\n"
+msgstr "持久世界与账号：\n[ul]完整可用的账号与角色创建系统。\n新增超过 15 种发型和 20 种发色来自定义你的角色。\n借助新的 SQL 后端，任务、背包、属性等进度现在都会被保存。\n新增更先进的服务器界面，便于管理在线世界。[/ul]\n\n探索与世界观：\n[ul]托诺里沙漠新增四张洞窟地图，包括沙暴矿坑与蛇坑洞窟。\n新增 15 种以上怪物，为这些危险区域注入生机。\n图利姆沙尔这座新城市已进入早期开发阶段，并将成为下一个里程碑的重点内容。[/ul]\n\n用户界面：\n[ul]新增登录/创建账号与角色选择/自定义界面。\n新增将任务日志与图鉴合并的进度窗口。\n重新设计背包、小地图与玩家属性界面。[/ul]\n\n战斗与装备：\n[ul]新增区域型投射物并改进目标锁定逻辑。\n怪物死亡后会掉落物品。\n加入更完整的背包系统：堆叠、装备栏位与属性修正。\n新增 25 件以上装备，并能在角色立绘上显示穿戴外观。[/ul]\n\n基础设施与技术：\n[ul]支持 itch.io 与浏览器游玩的 WebSocket。\n加入使用密码哈希与 TLS 的安全登录系统。\n开发平台从 GitLab 切换到 GitHub。\n在 GitHub Actions 中持续推进 CI/CD 自动化。[/ul]\n\n这次发布是迈向持久且不断演化世界的重要一步。\n感谢你的游玩！图利姆沙尔与更多新内容将在下一个里程碑中等着你。\n"
+
+msgid "Version 0.0.7"
+msgstr "版本 0.0.7"
+
+msgid "Changelog:\n[ul]Sailing System: Explore the seas with the nw sailing mechanics and traverse new areas like Artis or drop anchor to explore the inside of your ship.\nImproved AI: Monsters now exhibit advanced behaviors such as stealing and spawning minions.\nQuest & Dialogue Support: The Splatyna Quest and Candor's Arena are introduced with a brand new NPC system.\nEquipment & Combat: Stackable equipment sprites and clearer HP management for entities, along with monster item drops.\nMap & Navigation: New maps like your ship LaJohanne, Artis the port city and various navigation system enhancements.\nUI & Feedback: Android, gameplay and keyboard advanced button bindings to work equaly on all supported platforms.\nNew Monsters: Introducing new monsters like Turtle, Bat, Croc, and Rat, each with their own unique behaviors.\nSystem Enhancements: Resolved bugs such as respawning issues, CPU overload on Linux, and improved device detection.\nArt & Assets: New and improved tilesets, recolor palettes and so many more![/ul]\nWe鈥檙e excited to bring you these updates and appreciate your continued support and feedback!\n"
+msgstr "更新日志：\n[ul]航海系统：通过新的航海机制探索海洋，前往阿尔缇斯等新区域，或抛锚探索你的船只内部。\nAI 改进：怪物现在拥有更复杂的行为，例如偷窃与召唤随从。\n任务与对话支持：通过全新的 NPC 系统，斯普拉蒂娜任务线与坎多尔竞技场正式登场。\n装备与战斗：加入可叠加的装备外观、更清晰的实体生命值管理以及怪物掉落物。\n地图与导航：新增你的船 LaJohanne、港口城市阿尔缇斯等地图，并强化导航系统。\n界面与反馈：安卓、游戏内操作与键盘绑定得到加强，可在所有支持平台上更一致地工作。\n新怪物：加入海龟、蝙蝠、鳄鱼和老鼠等新怪物，每种都有独特行为。\n系统增强：修复复活、Linux CPU 负载过高和设备检测等问题。\n美术与资源：新增并改进了大量图块、调色板与其他素材！[/ul]\n我们很高兴为你带来这些更新，也感谢你持续的支持与反馈！\n"
+
+msgid "Version 0.0.6"
+msgstr "版本 0.0.6"
+
+msgid "Game:\n[ul]\nFont visibility improvements\nEnemy/Ally information fade in/out on focus\nMusic continuity upon entering new maps\nStat window (F2)\nSkill particles effects used by all entities\nAdvanced overworld warping\nSettings improvement\nTips window\nItems, Emotes and skills shortcuts\n[/ul]\n\nCode:\n[ul]\nUpgrade to Godot 4.2.1\nDeath logic\nDefault AI for wandering entities\nExperience and level-up system\nAdvanced stat formulas\nAdvanced combat and skills\nNetwork support for item usage and inventory\nDevice/input manager\nClear network code and use network channels\nCallback and various utils static classes\nUnify config files within our editor\nCode clean up and refactoring\nLighting optimization for mobile and low-end devices\nAdvanced resources management\nDeferred instantiation\n[/ul]\n\nThis update focus on implementing reliable combat, skill and AI systems while improving our current content and art direction toward our targeted level of quality for SoM.\nThank you for all your feedbacks and comments throughout the development of this version!\n"
+msgstr "游戏：\n[ul]\n改进字体可读性\n敌我信息在聚焦时淡入淡出\n切换地图时音乐连续播放\n属性窗口（F2）\n所有实体共用技能粒子特效\n更完善的大地图传送\n设置功能增强\n提示窗口\n物品、表情与技能快捷栏\n[/ul]\n\n代码：\n[ul]\n升级至 Godot 4.2.1\n死亡逻辑\n游荡实体的默认 AI\n经验与升级系统\n更高级的属性公式\n更完整的战斗与技能系统\n加入物品使用与背包的网络支持\n设备/输入管理器\n更清晰的网络代码与网络通道使用\n回调与多种静态工具类\n统一编辑器中的配置文件\n代码清理与重构\n为移动端和低配设备优化光照\n更高级的资源管理\n延迟实例化\n[/ul]\n\n这次更新聚焦于实现可靠的战斗、技能与 AI 系统，同时继续提升现有内容与美术方向，朝着 SoM 目标质量迈进。\n感谢你在这一版本开发期间提供的所有反馈与建议！\n"
+
+msgid "Version 0.0.5"
+msgstr "版本 0.0.5"
+
+msgid "Gameplay Enhancements:\n[ul]Different player sprite and walking speed on the overworld map.\nMorph feature allowing dynamic player transformations.\nIntroduction of a setting menu for player customization.\nCustom UI for mobile devices.\nEnhanced monster interaction, featuring kill, spawn, and automatic respawn capabilities.\nImplementation of attack animations and action support.\nOngoing improvement of the game Finite State Machine.\nTile animation and cave effects for an immersive experience.\nReworked game UI enter/exit flow for a smoother user experience.\nDynamic position and animations to display damage, dialogue and emotes information.\nGender and player sprite color support.\nIntroduction of new emotes for richer player expression.[/ul]\n\nCode:\n[ul]Implementation of the stat system.\nCode organization with more node-oriented refacto.\nBlendTree support for our animations.\nOpenGL3 builds by default.\nNetwork replication optimizations.[/ul]\n\nProject:\n[ul]GitHub mirror for improved visibility.\nImplementation of an online list web page for player tracking.[/ul]\n\nThis update brings Source of Mana closer to its vision by setting our UI/UX to the standard we want to aim for the rest of the development of this project.\nYour feedback is invaluable as we shape the future of the game together!\n"
+msgstr "玩法增强：\n[ul]大地图上使用不同的玩家立绘与行走速度。\n新增 Morph 功能，实现动态角色变身。\n加入用于个性化设置的菜单。\n为移动设备定制界面。\n强化怪物交互，支持击杀、生成与自动重生。\n实现攻击动画与动作支持。\n持续改进游戏状态机。\n加入地块动画与洞窟特效，提升沉浸感。\n重做界面进入/退出流程，带来更顺畅的体验。\n以动态位置与动画显示伤害、对话与表情信息。\n支持性别与玩家立绘配色。\n新增更多表情，提升角色表现力。[/ul]\n\n代码：\n[ul]实现属性系统。\n以更偏向节点的方式重组代码。\n支持 BlendTree 动画树。\n默认使用 OpenGL3 构建。\n优化网络同步。[/ul]\n\n项目：\n[ul]加入 GitHub 镜像，提升可见度。\n实现在线玩家列表网页。[/ul]\n\n这次更新通过确立我们想在后续开发中持续坚持的 UI/UX 标准，让 Source of Mana 更接近项目愿景。\n在我们共同塑造游戏未来的过程中，你的反馈非常宝贵！\n"
+
+msgid "Version 0.0.4"
+msgstr "版本 0.0.4"
+
+msgid "Game:\n[ul]Add a new zone, the skull cave map[/ul]\nCode:\n[ul]Splitting navigation export from the server export and make it optional\nRemove all function call used by the server that use game nodes else than specific server data, db and conf files\nSplit Entity code for a client/server use\nAdd basic client/server connection (ip:port connection)\nAdd basic entity sync with a client/server (pos, animation)\nAdd state sync with a client/server\nAdd emote sync with a client/server\nAdd chat sync with a client/server\nScreenshot feature\nNPC support split from mob support\nBasic NPC interaction\nChat history feature (Up/Down keys)[/ul]\nProduction:\n[ul]Generate two binaries through the same project, be able to run in hybrid and in client/server\nZoomed viewport for mobile and large screen.[/ul]\n"
+msgstr "游戏：\n[ul]新增一个区域：骷髅洞窟地图[/ul]\n代码：\n[ul]将导航导出与服务器导出拆分，并使其可选\n移除服务器中依赖游戏节点的调用，仅保留特定服务器数据、数据库与配置文件\n为客户端/服务器用法拆分实体代码\n加入基础的客户端/服务器连接（IP:端口）\n加入基础的客户端/服务器实体同步（位置、动画）\n加入状态同步\n加入表情同步\n加入聊天同步\n新增截图功能\n将 NPC 支持与怪物支持拆分\n加入基础 NPC 交互\n加入聊天历史（上/下键）[/ul]\n产出：\n[ul]通过同一个项目生成两个二进制版本，可运行于混合模式以及客户端/服务器模式\n为移动端和大屏设备提供放大视口。[/ul]\n"
+
+msgid "Version 0.0.3"
+msgstr "版本 0.0.3"
+
+msgid "Game:\n[ul]Add various new slime mobs\nComplete the slime cave design\nAdd an overworld map concept[/ul]\nCode:\n[ul]General UI improvement\nItem management\nChat support (but local only)\nMap import improvement\nEntity refactorisation\nNPC/Monster support\nFull navigation support\nDefault AI\nSplit most of our code to work in client/server[/ul]\nDesign:\n[ul]Game Design Document update\nWorld map concept\nQuest & Narrative design in progress[/ul]\nProject:\n[ul]Create a new Art & Design repository to store most of our assets[/ul]\n"
+msgstr "游戏：\n[ul]新增多种史莱姆怪物\n完成史莱姆洞窟设计\n加入大地图概念[/ul]\n代码：\n[ul]整体界面改进\n物品管理\n聊天支持（但仅限本地）\n改进地图导入\n实体重构\n加入 NPC/怪物支持\n完整导航支持\n默认 AI\n将大部分代码拆分为可用于客户端/服务器的结构[/ul]\n设计：\n[ul]更新游戏设计文档\n世界地图概念\n任务与叙事设计进行中[/ul]\n项目：\n[ul]新建 Art & Design 仓库以存放大部分素材[/ul]\n"
+
+msgid "Version 0.0.2"
+msgstr "版本 0.0.2"
+
+msgid "\tHello Manaverse!\nWe bring you the second step in this project, on the second day of the second month from publication!\nToday we're finally releasing the 0.0.2 version of Source of Mana. A lot of things are being built from scratch or are newly adapted for Godot, so most of these changes are designed to prepare the game for a future prototype release. New builds are now available for download. We encourage you to take a look and let us know what you think.\n\nSource of Mana has grown a lot over the past month, our seedling of a project is finally sprouting into the wonderful tree it will one day become. The 0.0.1 release was downloaded nearly 100 times, which we consider pretty good for such a small prototype.\n\nChangelog:\n[ul]Game ported to Godot 4.0 (Beta 2) after initially being built on Godot 3.5;\nAdded minimap support;\nImproved Tiled map imports to work with Godot 4.0;\nAdded various GUI elements including windows, buttons, and fonts;\nAdded support for emotes (as well as new TMW-style emotes that will be coming with future releases!);\nVarious GUI, navigation, and build fixes;\nNew story design in progress for a central storyline and to incorporate Mana into our World.[/ul]\n"
+msgstr "\t你好，玛娜世界！\n在项目发布后的第二个月第二天，我们为你带来了这个项目的第二步！\n今天，我们终于发布了 Source of Mana 的 0.0.2 版本。许多内容都在从零开始构建，或是刚刚适配到 Godot，因此本次改动大多是为了给未来的原型版本打基础。新的构建版本现已开放下载，欢迎你体验并告诉我们你的想法。\n\n在过去一个月里，Source of Mana 成长了许多，我们这棵项目幼苗终于开始抽芽，朝着未来那棵大树迈进。0.0.1 版本已经被下载了将近 100 次，对于这样一个小型原型来说，我们觉得这是很不错的成绩。\n\n更新日志：\n[ul]游戏从最初的 Godot 3.5 迁移到 Godot 4.0（Beta 2）；\n新增小地图支持；\n改进 Tiled 地图导入以适配 Godot 4.0；\n新增多种 GUI 元素，包括窗口、按钮和字体；\n加入表情支持（以及未来版本将会推出的新 TMW 风格表情！）；\n修复多项界面、导航和构建问题；\n新的主线故事设计正在推进，以构建中心叙事并将 Mana 融入我们的世界。[/ul]\n"
+
+msgid "Version 0.0.1"
+msgstr "版本 0.0.1"
+
+msgid "\tHello Mana world,\n\nOur prototype and first version of Source of Mana is now available to download on our itch.io page.\n\nFor this first version, the changelog would be pretty large, so instead, I prefer to present you on the main lines what we have been trying to achieve:\n\nOur ambition was to create a working offline prototype of what could be TMW within Godot in 2022, we prepared a basic code, asset, project architectures, and a game design document to support our game development.\n\nOur code rolls with a service system that can be enabled/disabled from a main scene. Multiple scenes will be created within the same Godot project to generate a server, a client, and a launcher.\n\nOur asset regroups what was previously done on TMW and rEvolt, we are preparing a new git repository to work like a giant asset store that features all available content that can be featured on SoM based on the quality and needs of these assets.\n\nOur project will be managed through Gitlab's built-in agile planning with a \"Milestone\" release plan.\n\nOur game design is currently being redacted into a Game Design Document that will feature all of the main designs and focus we will want to address.\n\nAside from all of these plans, our First Playable Preview release features a playable character with basic walk and sit actions that can wander inside a cave by mouse, keyboard, and gamepad.\nGodot's benefits are many but the most important is the easy release process that helps us to prepare builds for different platforms like Linux, MacOS, Windows, and Android.\n"
+msgstr "\t你好，玛娜世界，\n\nSource of Mana 的原型版和首个版本现已可在我们的 itch.io 页面下载。\n\n对于这个首个版本来说，更新日志会非常长，因此我更想用几个重点来介绍我们想要达成的目标：\n\n我们的目标是在 2022 年于 Godot 中做出一个可运行的、类似 TMW 的离线原型。为此，我们准备了基础代码、资源与项目架构，以及一份游戏设计文档来支持开发。\n\n我们的代码采用服务系统，可从主场景启用或禁用。我们会在同一个 Godot 项目中创建多个场景，用来生成服务器、客户端和启动器。\n\n我们的资源整合了 TMW 与 rEvolt 过往已有的内容，我们还在准备一个新的 git 仓库，把它做成一个巨大的资源库，根据素材质量与项目需求，为 SoM 提供可用内容。\n\n项目将通过 GitLab 内建的敏捷规划进行管理，并采用 “Milestone” 版本计划。\n\n我们的游戏设计目前正整理进一份游戏设计文档，其中将涵盖我们希望重点推进的主要设计方向。\n\n除这些计划之外，我们的首个可游玩预览版已经包含一个可操作角色，支持基础的行走与坐下动作，并可通过鼠标、键盘和手柄在洞窟中移动。\nGodot 有很多优点，而最重要的一点，是它能让我们更容易为 Linux、macOS、Windows 和 Android 等平台准备发布版本。\n"
+
+msgid "Source of Mana"
+msgstr "Source of Mana"
+
+msgid "Evol Online"
+msgstr "Evol Online"
+
+msgid "The Mana World"
+msgstr "The Mana World"
+
+msgid "Moubootaur Legends"
+msgstr "Moubootaur Legends"
+
+msgid "Land Of Fire"
+msgstr "Land Of Fire"
+
+msgid "The Mana World - German"
+msgstr "The Mana World - German"
+
+msgid "The Mana World - Unknown Flying Bullet"
+msgstr "The Mana World - Unknown Flying Bullet"
+
+msgid "Aethyra"
+msgstr "Aethyra"
+
+msgid "The Mana World - Brazil"
+msgstr "The Mana World - Brazil"
+
+msgid "Open Game Art"
+msgstr "Open Game Art"
+
+msgid "Free Sound"
+msgstr "Free Sound"
+
+msgid "In Memoriam"
+msgstr "纪念"
+
+msgid "Licensing"
+msgstr "许可"
+
+msgid "Game Direction"
+msgstr "游戏统筹"
+
+msgid "Art Department"
+msgstr "美术组"
+
+msgid "Code Department"
+msgstr "程序组"
+
+msgid "Administration & IT"
+msgstr "管理与 IT"
+
+msgid "Design Department"
+msgstr "设计组"
+
+msgid "Sound Department"
+msgstr "音频组"
+
+msgid "Web Department"
+msgstr "网站组"
+
+msgid "Translation Department"
+msgstr "翻译组"
+
+msgid "Moderation"
+msgstr "管理组"
+
+msgid "Contributors"
+msgstr "贡献者"
+
+msgid "Content Department"
+msgstr "内容组"
+
+msgid "Chief Moderator & Host"
+msgstr "首席版主与主机维护"
+
+msgid "IT & Server Support"
+msgstr "IT 与服务器支持"
+
+msgid "To you who left us, again and again, thank you"
+msgstr "致那些一次次离开我们的你们，谢谢"
+
+msgid "Manasource"
+msgstr "Manasource"
+
+msgid "Software in the Public Interest"
+msgstr "Software in the Public Interest"
+
+msgid "Godot"
+msgstr "Godot"
+
+msgid "Copyright (c) 2022-present Source of Mana contributors.\nCopyright (c) 2010-2016 Evol Online contributors.\nCopyright (c) 2004-2022 The Mana World contributors.\n\n-- Manasource <https://manasource.org>\n"
+msgstr "版权 (c) 2022 至今 Source of Mana 贡献者。\n版权 (c) 2010-2016 Evol Online 贡献者。\n版权 (c) 2004-2022 The Mana World 贡献者。\n\n-- Manasource <https://manasource.org>\n"
+
+msgid "-- SPI In.c <https://spi-inc.org>\n"
+msgstr "-- SPI In.c <https://spi-inc.org>\n"
+
+msgid "Copyright (c) 2014-present Godot Engine contributors.\nCopyright (c) 2007-2014 Juan Linietsky, Ariel Manzur.\n\nPermission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.\n\n-- Godot Engine <https://godotengine.org>\n"
+msgstr "版权 (c) 2014 至今 Godot Engine 贡献者。\n版权 (c) 2007-2014 Juan Linietsky、Ariel Manzur。\n\n特此免费授予任何获得本软件及相关文档文件（以下简称“软件”）副本的人不受限制地处理本软件的权利，包括但不限于使用、复制、修改、合并、发布、分发、再许可和/或销售软件副本的权利，并允许向其提供软件的人这样做，但须符合以下条件：\n\n上述版权声明和本许可声明应包含在软件的所有副本或重要部分中。\n\n本软件按“原样”提供，不附带任何形式的明示或暗示担保，包括但不限于适销性、特定用途适用性和非侵权的担保。在任何情况下，作者或版权持有人均不对因本软件或本软件的使用或其他处理而产生、由之引起或与之相关的任何索赔、损害或其他责任承担责任，无论其责任依据是合同、侵权还是其他法律原因。\n\n-- Godot Engine <https://godotengine.org>\n"

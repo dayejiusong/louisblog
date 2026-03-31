@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://6pundiwfj5s1"]
+
+[ext_resource type="Shader" uid="uid://ou8b7xhybpt" path="res://sources/shaders/HQ4x.gdshader" id="1_ojh3w"]
+[ext_resource type="Texture2D" uid="uid://fycxxcgj72w4" path="res://data/graphics/gui/button.png" id="2_h2r72"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_pp1k4"]
+shader = ExtResource("1_ojh3w")
+shader_parameter/enabled = true
+
+[node name="HQ4x" type="TextureRect" unique_id=324653660]
+material = SubResource("ShaderMaterial_pp1k4")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("2_h2r72")

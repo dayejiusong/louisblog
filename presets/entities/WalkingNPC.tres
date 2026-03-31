@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="EntityData" format=3 uid="uid://b1fircprcri7h"]
+
+[ext_resource type="Script" uid="uid://bsjkeucmohr0d" path="res://sources/cell/ItemCell.gd" id="1_inbjp"]
+[ext_resource type="Resource" uid="uid://4rg2ie02bp5g" path="res://presets/entities/NPC.tres" id="2_lg1ca"]
+[ext_resource type="Script" uid="uid://mtjk83jdl176" path="res://sources/db/instance/EntityData.gd" id="2_uxk7g"]
+
+[resource]
+script = ExtResource("2_uxk7g")
+_parent = ExtResource("2_lg1ca")
+_id = 2377595219
+_name = "WalkingNPC"
+_spritePreset = "Player"
+_stats = {
+"level": 1,
+"walkSpeed": 160.0
+}
+_equipment = Array[ExtResource("1_inbjp")]([null, null, null, null, null, null, null, null])
+_behaviour = 1
+_skillSet = PackedInt64Array()
+_drops = PackedInt64Array()

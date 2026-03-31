@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="ItemCell" format=3 uid="uid://dkd84uiney57u"]
+
+[ext_resource type="Texture2D" uid="uid://bsmqrdxl6pf2j" path="res://data/graphics/items/common/bottle-empty.png" id="1_mc4ws"]
+[ext_resource type="Script" uid="uid://bsjkeucmohr0d" path="res://sources/cell/ItemCell.gd" id="2_v0qjy"]
+
+[resource]
+script = ExtResource("2_v0qjy")
+id = 2850928111
+name = "Bottle"
+description = "An empty glass bottle, ready to be filled with whatever the world has to offer."
+icon = ExtResource("1_mc4ws")
+weight = 15.0
+stackable = true

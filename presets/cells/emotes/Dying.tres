@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="BaseCell" format=3 uid="uid://wr4nvle18si0"]
+
+[ext_resource type="Texture2D" uid="uid://du08xosrfwotc" path="res://data/graphics/emotes/dying.png" id="1_2xgrj"]
+[ext_resource type="Script" uid="uid://cxsn36lpngjtj" path="res://sources/cell/BaseCell.gd" id="2_xjuqh"]
+
+[resource]
+script = ExtResource("2_xjuqh")
+id = 219261312
+name = "Dying"
+icon = ExtResource("1_2xgrj")
+type = 1
+weight = 0.0
+usable = true

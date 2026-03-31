@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="EntityData" format=3 uid="uid://b5fy25emw04go"]
+
+[ext_resource type="Script" uid="uid://bsjkeucmohr0d" path="res://sources/cell/ItemCell.gd" id="1_f2r5s"]
+[ext_resource type="Script" uid="uid://mtjk83jdl176" path="res://sources/db/instance/EntityData.gd" id="2_l2mfi"]
+
+[resource]
+script = ExtResource("2_l2mfi")
+_id = 2549154767
+_name = "Spiky Mushroom"
+_spritePreset = "Generic4Directions"
+_collision = "Medium"
+_radius = 16
+_stats = {
+"level": 1,
+"walkSpeed": 80.0
+}
+_equipment = Array[ExtResource("1_f2r5s")]([null, null, null, null, null, null, null, null])
+_customTexture = "sprites/monsters/mushroom-spiky.png"
+_skillSet = PackedInt64Array()
+_drops = PackedInt64Array()

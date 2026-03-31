@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="EntityData" format=3 uid="uid://i0h1d0li0e4l"]
+
+[ext_resource type="Script" uid="uid://bsjkeucmohr0d" path="res://sources/cell/ItemCell.gd" id="1_rwjk6"]
+[ext_resource type="Script" uid="uid://mtjk83jdl176" path="res://sources/db/instance/EntityData.gd" id="2_b016p"]
+[ext_resource type="Resource" uid="uid://b58u4sccexbpg" path="res://presets/cells/items/chest/DesertArmor.tres" id="2_f4e3t"]
+[ext_resource type="Resource" uid="uid://b8awmxy22bpqi" path="res://presets/cells/items/legs/GuardCloudPants.tres" id="3_2ug6c"]
+[ext_resource type="Resource" uid="uid://b1kgjqcht72fg" path="res://presets/cells/items/feet/LeatherBoots.tres" id="4_cmdgh"]
+[ext_resource type="Resource" uid="uid://dw678a4b7ps2w" path="res://presets/cells/items/weapon/Scimitar.tres" id="5_fge4m"]
+[ext_resource type="Resource" uid="uid://b1fircprcri7h" path="res://presets/entities/WalkingNPC.tres" id="6_2ug6c"]
+
+[resource]
+script = ExtResource("2_b016p")
+_parent = ExtResource("6_2ug6c")
+_id = 3639315857
+_name = "Tulimshar Guard"
+_stats = {
+"gender": "Female",
+"haircolor": "Light Violet",
+"hairstyle": "Imperial",
+"level": 1,
+"race": "Human",
+"skintone": "Dark"
+}
+_equipment = Array[ExtResource("1_rwjk6")]([ExtResource("2_f4e3t"), ExtResource("3_2ug6c"), ExtResource("4_cmdgh"), null, null, null, ExtResource("5_fge4m"), null])
+_skillSet = PackedInt64Array()
+_drops = PackedInt64Array()

@@ -1,0 +1,757 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Source of Mana\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Artis"
+msgstr "阿尔缇斯"
+
+msgid "Artis Sewer"
+msgstr "阿尔缇斯下水道"
+
+msgid "Abandoned Mine"
+msgstr "废弃矿坑"
+
+msgid "Candor Arena"
+msgstr "坎多尔竞技场"
+
+msgid "Candor Cave"
+msgstr "坎多尔洞窟"
+
+msgid "Desert Mines"
+msgstr "沙漠矿坑"
+
+msgid "Desert Mountain Cave"
+msgstr "沙漠山洞"
+
+msgid "Desert Mountains"
+msgstr "沙漠山脉"
+
+msgid "Desert Pit"
+msgstr "沙漠深坑"
+
+msgid "Desert Abandoned Level"
+msgstr "沙漠废弃层"
+
+msgid "Desert Deep Level"
+msgstr "沙漠深层"
+
+msgid "Manayir"
+msgstr "马奈伊尔"
+
+msgid "Manayir Beach"
+msgstr "马奈伊尔海滩"
+
+msgid "Ocean"
+msgstr "海洋"
+
+msgid "Overworld"
+msgstr "大地图"
+
+msgid "Ship"
+msgstr "船只"
+
+msgid "Ship First Deck"
+msgstr "船只第一甲板"
+
+msgid "Ship Second Deck"
+msgstr "船只第二甲板"
+
+msgid "Ship Hold"
+msgstr "船舱"
+
+msgid "Ship Nard's Room"
+msgstr "纳德的房间"
+
+msgid "Snake Pit"
+msgstr "蛇坑"
+
+msgid "Snake Pit Pond"
+msgstr "蛇坑水潭"
+
+msgid "Splatyna Cave Entrance"
+msgstr "斯普拉蒂娜洞窟入口"
+
+msgid "Splatyna's Chamber"
+msgstr "斯普拉蒂娜的密室"
+
+msgid "Splatyna's Corridor"
+msgstr "斯普拉蒂娜的回廊"
+
+msgid "Splatyna's Dorian Dead End"
+msgstr "斯普拉蒂娜的多里安死胡同"
+
+msgid "Splatyna's Gabriel Pit"
+msgstr "斯普拉蒂娜的加百列深坑"
+
+msgid "Splatyna's Marvin Hole"
+msgstr "斯普拉蒂娜的马文洞口"
+
+msgid "Splatyna's Offering"
+msgstr "斯普拉蒂娜的祭坛"
+
+msgid "Tulimshar"
+msgstr "图利姆沙尔"
+
+msgid "Tulimshar Bay"
+msgstr "图利姆沙尔海湾"
+
+msgid "Tulimshar Beach"
+msgstr "图利姆沙尔海滩"
+
+msgid "Tulimshar Castle"
+msgstr "图利姆沙尔城堡"
+
+msgid "Tulimshar Castle Corridors"
+msgstr "图利姆沙尔城堡走廊"
+
+msgid "Tulimshar Center"
+msgstr "图利姆沙尔中心"
+
+msgid "Tulimshar Eastern Hills"
+msgstr "图利姆沙尔东丘"
+
+msgid "Tulimshar Southern Hills"
+msgstr "图利姆沙尔南丘"
+
+msgid "Tulimshar West Chamber"
+msgstr "图利姆沙尔西侧房间"
+
+msgid "Tulimshar West Wall Pathway"
+msgstr "图利姆沙尔西墙小径"
+
+msgid "Tulimshar Western Cave"
+msgstr "图利姆沙尔西洞"
+
+msgid "Tulimshar Western Hills"
+msgstr "图利姆沙尔西丘"
+
+msgid "Apple"
+msgstr "苹果"
+
+msgid "Bottle"
+msgstr "瓶子"
+
+msgid "Water Bottle"
+msgstr "水瓶"
+
+msgid "Cactus Drink"
+msgstr "仙人掌饮料"
+
+msgid "Cactus Sour Candy"
+msgstr "酸味仙人掌糖"
+
+msgid "Croissant"
+msgstr "羊角面包"
+
+msgid "Letter"
+msgstr "信件"
+
+msgid "Mine Key"
+msgstr "矿坑钥匙"
+
+msgid "Chest Mine Key"
+msgstr "矿坑宝箱钥匙"
+
+msgid "Dorian's Key"
+msgstr "多里安的钥匙"
+
+msgid "Gabriel's Key"
+msgstr "加百列的钥匙"
+
+msgid "Marvin's Key"
+msgstr "马文的钥匙"
+
+msgid "Thief's Key"
+msgstr "盗贼钥匙"
+
+msgid "Bone Knife"
+msgstr "骨刀"
+
+msgid "Rock Knife"
+msgstr "岩石小刀"
+
+msgid "Cleaver"
+msgstr "砍刀"
+
+msgid "Gladius"
+msgstr "短剑"
+
+msgid "Scimitar"
+msgstr "弯刀"
+
+msgid "Short Sword"
+msgstr "短剑"
+
+msgid "Raw Wood Shield"
+msgstr "原木盾"
+
+msgid "Leather Shield"
+msgstr "皮盾"
+
+msgid "Cotton Shirt"
+msgstr "棉布衬衫"
+
+msgid "Leather Shirt"
+msgstr "皮衣"
+
+msgid "Leather Pants"
+msgstr "皮裤"
+
+msgid "Leather Boots"
+msgstr "皮靴"
+
+msgid "Leather Gloves"
+msgstr "皮手套"
+
+msgid "Leather Armbands"
+msgstr "皮护臂"
+
+msgid "Desert Armor"
+msgstr "沙漠护甲"
+
+msgid "Desert Jacket"
+msgstr "沙漠夹克"
+
+msgid "Desert Hood"
+msgstr "沙漠兜帽"
+
+msgid "Desert Goggles"
+msgstr "沙漠护目镜"
+
+msgid "Desert Boots"
+msgstr "沙漠长靴"
+
+msgid "Desert Shield"
+msgstr "沙漠盾牌"
+
+msgid "Desert Armbands"
+msgstr "沙漠护臂"
+
+msgid "Cloud Pants"
+msgstr "云纹长裤"
+
+msgid "Crop Top"
+msgstr "短上衣"
+
+msgid "Daim Boots"
+msgstr "绒面靴"
+
+msgid "Bandana Scarf"
+msgstr "头巾围巾"
+
+msgid "Ghutra"
+msgstr "阿拉伯头巾"
+
+msgid "Gold Bracelets"
+msgstr "金手镯"
+
+msgid "Silver Bracelets"
+msgstr "银手镯"
+
+msgid "Gown"
+msgstr "长袍"
+
+msgid "Jean Chaps"
+msgstr "牛仔护腿裤"
+
+msgid "Miner Helmet"
+msgstr "矿工头盔"
+
+msgid "Shorts"
+msgstr "短裤"
+
+msgid "Tank Top"
+msgstr "背心"
+
+msgid "Tonori Crown"
+msgstr "托诺里王冠"
+
+msgid "Trousers"
+msgstr "长裤"
+
+msgid "V-Neck Tee"
+msgstr "V 领 T 恤"
+
+msgid "A crisp red apple known for its refreshing taste and vitality-boosting properties."
+msgstr "一颗爽脆的红苹果，以清新口感和恢复活力的效果闻名。"
+
+msgid "A curved blade as swift and unyielding as the desert sun."
+msgstr "一把弧形刀刃，像沙漠烈日一样迅疾而无情。"
+
+msgid "A heavy blade crafted for sheer power and decisive strikes."
+msgstr "为纯粹力量与致命一击打造的厚重刀刃。"
+
+msgid "A key that has been hidden a long time ago, seems to open a fancy door."
+msgstr "一把被藏了很久的钥匙，似乎能打开一扇华丽的门。"
+
+msgid "A knife made from bones. Quite effective."
+msgstr "用骨头制成的小刀，意外地很实用。"
+
+msgid "A refreshing cactus drink."
+msgstr "一杯清爽的仙人掌饮料。"
+
+msgid "A rusty key found in the abandoned mine."
+msgstr "在废弃矿坑中找到的一把生锈钥匙。"
+
+msgid "A simple bottle filled with clear water."
+msgstr "一个装满清水的简单瓶子。"
+
+msgid "A simple bow attack, shoot one arrow at a time."
+msgstr "基础弓箭攻击，一次射出一支箭。"
+
+msgid "A stamped letter given for a specific quest."
+msgstr "为特定任务准备的盖章信件。"
+
+msgid "A tarnished key found in the snake pit."
+msgstr "在蛇坑里找到的一把失去光泽的钥匙。"
+
+msgid "A thin, soft and warm shirt."
+msgstr "一件轻薄、柔软又保暖的上衣。"
+
+msgid "An empty glass bottle, ready to be filled with whatever the world has to offer."
+msgstr "一个空玻璃瓶，随时可以装进这个世界提供的一切。"
+
+msgid "Classic trousers ornated with some fluffy fur."
+msgstr "经典长裤，点缀着柔软的绒毛。"
+
+msgid "Jeans with snake skin chaps."
+msgstr "带有蛇皮护腿的牛仔裤。"
+
+msgid "Mana Burst"
+msgstr "玛娜爆发"
+
+msgid "Sonic Wave"
+msgstr "音波冲击"
+
+msgid "Spitfire"
+msgstr "喷火术"
+
+msgid "Melee"
+msgstr "近战"
+
+msgid "Morph"
+msgstr "变形"
+
+msgid "Run"
+msgstr "奔跑"
+
+msgid "Cast a fire projectile, igniting enemies with intense heat and power."
+msgstr "发射一枚火焰弹，以炽热高温点燃敌人。"
+
+msgid "Cast a fire spray"
+msgstr "喷射火焰"
+
+msgid "Close combat attack."
+msgstr "近距离战斗攻击。"
+
+msgid "Heal yourself with a burst of restorative energy."
+msgstr "用一股恢复能量治疗自己。"
+
+msgid "Provide a light healing touch to allies or creatures."
+msgstr "为盟友或生物提供轻度治疗。"
+
+msgid "Releases a blue sonic wave that deals damage forward."
+msgstr "释放一道向前造成伤害的蓝色音波。"
+
+msgid "Toggle running to move faster at the cost of stamina."
+msgstr "切换奔跑，以消耗体力为代价换取更快移动。"
+
+msgid "Transform into your spirit form."
+msgstr "变身为你的灵体形态。"
+
+msgid "Unleash a mana-fueled attack, creating a focused circle of concentrated mana around you."
+msgstr "释放一次由玛娜驱动的攻击，在你周围形成一圈集中的玛娜冲击。"
+
+msgid "A Biting Thirst"
+msgstr "噬人的干渴"
+
+msgid "Grain in the desert"
+msgstr "沙漠中的粮食"
+
+msgid "Piou Slayer"
+msgstr "皮欧猎手"
+
+msgid "Sandstorm Mine Abandoned Treasure"
+msgstr "沙暴矿坑的废弃宝藏"
+
+msgid "Ship Alige Hide"
+msgstr "阿莉热的藏身处"
+
+msgid "Snake Pit Clue"
+msgstr "蛇坑线索"
+
+msgid "Snake Pit Thief"
+msgstr "蛇坑盗贼"
+
+msgid "Investigate a hidden bedroom deep within the Snake Pit, uncover the fate of a Tulimshar thief, solve his riddle, and recover the treasure he never reclaimed."
+msgstr "调查蛇坑深处的一间隐藏卧室，揭开一名图利姆沙尔盗贼的命运，解开他的谜题，并取回他再也没能拿走的宝藏。"
+
+msgid "Riskim the baker is waiting for a grain shipment marked with a blue Artis seal. Check the barrels at the docks."
+msgstr "面包师里斯基姆正在等待一批印有蓝色阿尔缇斯封印的粮食。去码头检查那些木桶。"
+
+msgid "Player"
+msgstr "玩家"
+
+msgid "NPC"
+msgstr "NPC"
+
+msgid "Object"
+msgstr "物件"
+
+msgid "StaticNPC"
+msgstr "静态 NPC"
+
+msgid "StaticObject"
+msgstr "静态物件"
+
+msgid "Trigger"
+msgstr "触发器"
+
+msgid "Unknown"
+msgstr "未知"
+
+msgid "Bat"
+msgstr "蝙蝠"
+
+msgid "Croc"
+msgstr "鳄鱼"
+
+msgid "Drain Slime"
+msgstr "吸取史莱姆"
+
+msgid "Evil Mushroom"
+msgstr "邪恶蘑菇"
+
+msgid "Fire Goblin"
+msgstr "火焰哥布林"
+
+msgid "Fire Skull"
+msgstr "火焰骷髅"
+
+msgid "Giant Maggot"
+msgstr "巨型蛆虫"
+
+msgid "Lynx"
+msgstr "猞猁"
+
+msgid "Maggot"
+msgstr "蛆虫"
+
+msgid "Piou"
+msgstr "皮欧"
+
+msgid "Ratto"
+msgstr "老鼠"
+
+msgid "Salt Slime"
+msgstr "盐晶史莱姆"
+
+msgid "Sand Snake"
+msgstr "沙蛇"
+
+msgid "Scorpion"
+msgstr "蝎子"
+
+msgid "Snake"
+msgstr "蛇"
+
+msgid "Sludge Slime"
+msgstr "污泥史莱姆"
+
+msgid "Spiky Mushroom"
+msgstr "刺蘑菇"
+
+msgid "Turtle"
+msgstr "海龟"
+
+msgid "Water point"
+msgstr "水源点"
+
+msgid "Andi"
+msgstr "安迪"
+
+msgid "Bicies"
+msgstr "比西斯"
+
+msgid "Dorian"
+msgstr "多里安"
+
+msgid "Drazil"
+msgstr "德拉泽尔"
+
+msgid "Ekinu"
+msgstr "埃基努"
+
+msgid "Emil"
+msgstr "埃米尔"
+
+msgid "Gabriel"
+msgstr "加百列"
+
+msgid "Gabz"
+msgstr "加布兹"
+
+msgid "Gilgames"
+msgstr "吉尔伽美什"
+
+msgid "Inma"
+msgstr "因玛"
+
+msgid "Kyle"
+msgstr "凯尔"
+
+msgid "Lilah"
+msgstr "莉拉"
+
+msgid "Lizandra"
+msgstr "莉赞德拉"
+
+msgid "Lizzy"
+msgstr "莉兹"
+
+msgid "Lulea"
+msgstr "露蕾娅"
+
+msgid "Lum"
+msgstr "露姆"
+
+msgid "Marvin"
+msgstr "马文"
+
+msgid "Mauro"
+msgstr "毛罗"
+
+msgid "Naem"
+msgstr "奈姆"
+
+msgid "Nickos"
+msgstr "尼科斯"
+
+msgid "Nicolas"
+msgstr "尼古拉斯"
+
+msgid "Nina"
+msgstr "妮娜"
+
+msgid "Peyote"
+msgstr "佩约特"
+
+msgid "Pinkie"
+msgstr "平奇"
+
+msgid "Red Queen"
+msgstr "红皇后"
+
+msgid "Riskim"
+msgstr "里斯基姆"
+
+msgid "Ryan"
+msgstr "瑞安"
+
+msgid "Sema"
+msgstr "塞玛"
+
+msgid "Wie"
+msgstr "薇"
+
+msgid "Amused"
+msgstr "逗乐"
+
+msgid "Angel"
+msgstr "天使"
+
+msgid "Angry"
+msgstr "生气"
+
+msgid "Bored"
+msgstr "无聊"
+
+msgid "Bubble"
+msgstr "气泡"
+
+msgid "Confused"
+msgstr "困惑"
+
+msgid "Creeped"
+msgstr "发毛"
+
+msgid "Dots"
+msgstr "无语"
+
+msgid "Dying"
+msgstr "垂死"
+
+msgid "Embarrassed"
+msgstr "尴尬"
+
+msgid "Evil"
+msgstr "邪恶"
+
+msgid "Grin"
+msgstr "咧嘴笑"
+
+msgid "Sad"
+msgstr "悲伤"
+
+msgid "Smile"
+msgstr "微笑"
+
+msgid "Surprised"
+msgstr "惊讶"
+
+msgid "Whatever"
+msgstr "无所谓"
+
+msgid "Wink"
+msgstr "眨眼"
+
+msgid "Bald"
+msgstr "光头"
+
+msgid "Bowl Cut"
+msgstr "锅盖头"
+
+msgid "Bunches"
+msgstr "双团子"
+
+msgid "Center Parting"
+msgstr "中分"
+
+msgid "Cheekbone Bob"
+msgstr "齐颊短发"
+
+msgid "Choppy"
+msgstr "碎剪短发"
+
+msgid "Combed Back"
+msgstr "后梳发型"
+
+msgid "Emo"
+msgstr "朋克斜刘海"
+
+msgid "Flat Ponytail"
+msgstr "低马尾"
+
+msgid "Fluffy"
+msgstr "蓬松"
+
+msgid "Long and Curly"
+msgstr "长卷发"
+
+msgid "Long and Slick"
+msgstr "顺直长发"
+
+msgid "Long Ponytail"
+msgstr "长马尾"
+
+msgid "Mane"
+msgstr "鬃毛头"
+
+msgid "Mohawk"
+msgstr "莫西干"
+
+msgid "Parted"
+msgstr "侧分"
+
+msgid "Pigtails"
+msgstr "双马尾"
+
+msgid "Pompadour"
+msgstr "蓬巴杜头"
+
+msgid "Ponytail"
+msgstr "马尾"
+
+msgid "Short and Curly"
+msgstr "短卷发"
+
+msgid "Side Strand"
+msgstr "侧刘海"
+
+msgid "Tapered Nape"
+msgstr "收短后颈"
+
+msgid "Wild"
+msgstr "狂野乱发"
+
+msgid "Archer"
+msgstr "弓手"
+
+msgid "Barrel"
+msgstr "木桶"
+
+msgid "Bird"
+msgstr "小鸟"
+
+msgid "Bun"
+msgstr "发髻"
+
+msgid "Chest"
+msgstr "宝箱"
+
+msgid "Guard Cloud Pants"
+msgstr "卫兵云纹裤"
+
+msgid "Funky Hat"
+msgstr "俏皮帽"
+
+msgid "Flour Barrel"
+msgstr "面粉桶"
+
+msgid "Death"
+msgstr "死亡"
+
+msgid "Imperial"
+msgstr "帝国风"
+
+msgid "Infinitely Long"
+msgstr "无限长发"
+
+msgid "Locks"
+msgstr "卷发束"
+
+msgid "Messy"
+msgstr "凌乱"
+
+msgid "Wave"
+msgstr "海浪"
+
+msgid "Splatyna"
+msgstr "斯普拉蒂娜"
+
+msgid "Elanore"
+msgstr "艾拉诺尔"
+
+msgid "Flar"
+msgstr "弗拉尔"
+
+msgid "Old Chest"
+msgstr "旧宝箱"
+
+msgid "Sandstorm"
+msgstr "沙暴"
+
+msgid "Snake Sand"
+msgstr "沙蛇"
+
+msgid "Thiefs Chest"
+msgstr "盗贼宝箱"
+
+msgid "Tulimshar Desert Guard"
+msgstr "图利姆沙尔沙漠卫兵"
+
+msgid "Tulimshar Desert Sbire"
+msgstr "图利姆沙尔沙漠侍从"
+
+msgid "Tulimshar Guard"
+msgstr "图利姆沙尔卫兵"
+
+msgid "Tulimshar Sbire"
+msgstr "图利姆沙尔侍从"
+
+msgid "Tulmshar Center"
+msgstr "图利姆沙尔中心"

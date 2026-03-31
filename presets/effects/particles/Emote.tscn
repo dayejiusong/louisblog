@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://08v0t5i6hvef"]
+
+[sub_resource type="Curve" id="Curve_e4xou"]
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.0508475, 1), 0.0, 0.0, 0, 0, Vector2(0.949153, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 4
+
+[sub_resource type="CurveTexture" id="CurveTexture_kbr4m"]
+curve = SubResource("Curve_e4xou")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_dwn11"]
+particle_flag_disable_z = true
+spread = 0.0
+gravity = Vector3(0, 0, 0)
+alpha_curve = SubResource("CurveTexture_kbr4m")
+
+[node name="Emote" type="GPUParticles2D" unique_id=672163703]
+position = Vector2(0, -4)
+amount = 1
+lifetime = 4.0
+process_material = SubResource("ParticleProcessMaterial_dwn11")

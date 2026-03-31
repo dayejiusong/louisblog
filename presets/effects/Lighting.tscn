@@ -1,0 +1,9 @@
+[gd_scene format=3 uid="uid://cl7hxeneetawl"]
+
+[ext_resource type="Material" uid="uid://dsqtrp5ortggt" path="res://presets/shaders/Lighting.tres" id="2_e0ppo"]
+
+[node name="ColorRect" type="ColorRect" unique_id=959809242]
+material = ExtResource("2_e0ppo")
+size_flags_horizontal = 3
+size_flags_vertical = 3
+color = Color(0, 0, 0, 1)

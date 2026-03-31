@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="EntityData" format=3 uid="uid://btbokrsjmsprp"]
+
+[ext_resource type="Script" uid="uid://bsjkeucmohr0d" path="res://sources/cell/ItemCell.gd" id="1_ejh15"]
+[ext_resource type="Script" uid="uid://mtjk83jdl176" path="res://sources/db/instance/EntityData.gd" id="2_md4lg"]
+[ext_resource type="Resource" uid="uid://du2jogb5rawi7" path="res://presets/cells/items/chest/DesertJacket.tres" id="2_tp11f"]
+[ext_resource type="Resource" uid="uid://b8awmxy22bpqi" path="res://presets/cells/items/legs/GuardCloudPants.tres" id="3_x06ni"]
+[ext_resource type="Resource" uid="uid://b1kgjqcht72fg" path="res://presets/cells/items/feet/LeatherBoots.tres" id="4_eh012"]
+[ext_resource type="Resource" uid="uid://bsscppglk0qam" path="res://presets/cells/items/head/Ghutra.tres" id="5_pqrqd"]
+[ext_resource type="Resource" uid="uid://b2g1xlar44gin" path="res://presets/cells/items/weapon/Gladius.tres" id="6_uduh7"]
+[ext_resource type="Resource" uid="uid://b1fircprcri7h" path="res://presets/entities/WalkingNPC.tres" id="7_x06ni"]
+
+[resource]
+script = ExtResource("2_md4lg")
+_parent = ExtResource("7_x06ni")
+_id = 3918743578
+_name = "Tulimshar Desert Sbire"
+_stats = {
+"gender": "Male",
+"haircolor": "Dark Copper",
+"hairstyle": "Tapered Nape",
+"level": 1,
+"race": "Human",
+"skintone": "Dark"
+}
+_equipment = Array[ExtResource("1_ejh15")]([ExtResource("2_tp11f"), ExtResource("3_x06ni"), ExtResource("4_eh012"), null, ExtResource("5_pqrqd"), null, ExtResource("6_uduh7"), null])
+_skillSet = PackedInt64Array()
+_drops = PackedInt64Array()
