@@ -83,6 +83,14 @@ If you’re interested in helping, join our community and check out our open iss
 - **Discord:** [Join here](https://discord.com/channels/581622549566193664/1013487216493854780)
 - **IRC:** `#sourceofmana` on [Libera.Chat](https://web.libera.chat/#sourceofmana)
 
+## GitHub Pages
+
+This repository includes a GitHub Actions workflow that exports the Web build and deploys it to GitHub Pages on every push to `main`.
+
+The browser version in this fork runs as a single-player web build and saves progress locally in the browser.
+
+To finish setup, open your repository settings on GitHub and set **Pages** to **GitHub Actions**.
+
 ## License
 
 For detailed information on the licensing of code, assets, and design, as well as credits for individual asset files, please refer to the [LICENSE.md](LICENSE.md) file.
