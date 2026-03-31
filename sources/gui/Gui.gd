@@ -50,6 +50,15 @@ extends ServiceBase
 # State transition
 var progressTimer : Timer						= null
 
+func RestoreScopedTextInput(scope : Control):
+	var focusedNode : Control = get_viewport().gui_get_focus_owner()
+	if focusedNode and focusedNode is LineEdit and scope and scope.is_ancestor_of(focusedNode):
+		focusedNode.release_focus()
+
+	# Hiding a form can skip focus_exited, so restore gameplay input before we leave the screen.
+	if Launcher.Action and not Launcher.Action.IsEnabled():
+		Launcher.Action.Enable(true)
+
 #
 func CloseWindow():
 	if FSM.IsLoginState():
@@ -152,6 +161,7 @@ func EnterLoginMenu():
 	buttonBoxes.set_visible(true)
 
 func EnterLoginProgress():
+	RestoreScopedTextInput(loginPanel)
 	loginPanel.set_visible(false)
 	buttonBoxes.set_visible(false)
 
@@ -178,6 +188,7 @@ func EnterCharMenu():
 	buttonBoxes.set_visible(true)
 
 func EnterCharProgress():
+	RestoreScopedTextInput(characterPanel)
 	characterPanel.set_visible(false)
 	buttonBoxes.set_visible(false)
 

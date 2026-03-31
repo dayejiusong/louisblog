@@ -32,6 +32,14 @@ var isAccountCreatorEnabled : bool			= false
 var recoveryState : RecoveryState			= RecoveryState.NONE
 var webSinglePlayerStarting : bool			= false
 
+func RestoreLoginTextInput():
+	var focusedNode : Control = get_viewport().gui_get_focus_owner()
+	if focusedNode and focusedNode is LineEdit and loginContainer and loginContainer.is_ancestor_of(focusedNode):
+		focusedNode.release_focus()
+
+	if Launcher.Action and not Launcher.Action.IsEnabled():
+		Launcher.Action.Enable(true)
+
 func ApplyWebSinglePlayerSplash() -> bool:
 	if not LauncherCommons.IsWebSinglePlayer():
 		if loginContainer:
@@ -42,6 +50,7 @@ func ApplyWebSinglePlayerSplash() -> bool:
 
 	recoveryState = RecoveryState.NONE
 	isAccountCreatorEnabled = false
+	RestoreLoginTextInput()
 	loginContainer.set_visible(false)
 	webSinglePlayerIntro.set_visible(true)
 	separator.set_visible(false)
