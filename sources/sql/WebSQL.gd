@@ -77,23 +77,19 @@ func _default_equipment() -> Dictionary:
 
 func _default_character_row(accountID : int, nickname : String, charID : int) -> Dictionary:
 	var now : int = SQLCommons.Timestamp()
-	return {
+	var row : Dictionary = {
 		"char_id": charID,
 		"account_id": accountID,
 		"nickname": nickname,
 		"created_timestamp": now,
 		"last_timestamp": now,
 		"total_time": 0,
-		"pos_x": LauncherCommons.DefaultStartPos.x,
-		"pos_y": LauncherCommons.DefaultStartPos.y,
-		"pos_map": LauncherCommons.DefaultStartMapID,
-		"respawn_x": LauncherCommons.DefaultStartPos.x,
-		"respawn_y": LauncherCommons.DefaultStartPos.y,
-		"respawn_map": LauncherCommons.DefaultStartMapID,
 		"explore_x": 0,
 		"explore_y": 0,
 		"explore_map": DB.UnknownHash
 	}
+	row.merge(LauncherCommons.GetDefaultStartCharacterData(), true)
+	return row
 
 func _get_account_row(accountID : int) -> Dictionary:
 	return store["accounts"].get(accountID, {})
@@ -291,6 +287,16 @@ func GetCharacterID(accountID : int, nickname : String) -> int:
 
 func GetCharacter(charID : int) -> Dictionary:
 	return _get_character_row(charID).duplicate(true)
+
+func ResetCharacterStart(charID : int) -> bool:
+	var row : Dictionary = _get_character_row(charID)
+	if row.is_empty():
+		return false
+
+	LauncherCommons.ApplyDefaultStartCharacterData(row)
+	store["characters"][charID] = row
+	_persist()
+	return true
 
 func UpdateCharacter(player : PlayerAgent) -> bool:
 	if player == null:

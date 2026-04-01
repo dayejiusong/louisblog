@@ -251,6 +251,14 @@ func DeleteCharacter(charName : String, peerID : int):
 	Network.CharacterError(err, peerID)
 	return err
 
+func _NormalizeCharacterStart(charInfo : Dictionary, charID : int) -> Dictionary:
+	if not isOffline or charInfo.is_empty() or not LauncherCommons.ShouldMigrateLegacySinglePlayerStart(charInfo):
+		return charInfo
+
+	if Launcher.SQL.ResetCharacterStart(charID):
+		LauncherCommons.ApplyDefaultStartCharacterData(charInfo)
+	return charInfo
+
 func _ConnectCharacter(nickname : String, peerID : int) -> NetworkCommons.CharacterError:
 	var err : NetworkCommons.CharacterError = NetworkCommons.CharacterError.ERR_OK
 	var peer : Peers.Peer = Peers.GetPeer(peerID)
@@ -271,6 +279,7 @@ func _ConnectCharacter(nickname : String, peerID : int) -> NetworkCommons.Charac
 				err = NetworkCommons.CharacterError.ERR_NO_CHARACTER_ID
 			else:
 				var charInfo : Dictionary = Launcher.SQL.GetCharacterInfo(peer.characterID)
+				charInfo = _NormalizeCharacterStart(charInfo, peer.characterID)
 				var spawnLocation : SpawnObject = PlayerAgent.GetSpawnFromData(charInfo)
 				var agent : PlayerAgent = WorldAgent.CreateAgent(spawnLocation, 0, nickname)
 				if agent:

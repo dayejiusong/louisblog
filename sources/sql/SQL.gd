@@ -86,6 +86,7 @@ func AddCharacter(accountID : int, nickname : String, stats : Dictionary, traits
 		"nickname": nickname,
 		"created_timestamp": SQLCommons.Timestamp()
 	}
+	charData.merge(LauncherCommons.GetDefaultStartCharacterData(), true)
 	var ret : bool = db.insert_row("character", charData)
 	if ret:
 		var charID : int = GetCharacterID(accountID, nickname)
@@ -149,6 +150,11 @@ func GetCharacter(charID : int) -> Dictionary:
 	var results : Array[Dictionary] = db.select_rows("character", "char_id = %d" % charID, ["*"])
 	assert(results.size() <= 1, "Duplicated character row %d" % charID)
 	return {} if results.is_empty() else results[0]
+
+func ResetCharacterStart(charID : int) -> bool:
+	if charID == NetworkCommons.PeerUnknownID:
+		return false
+	return db.update_rows("character", "char_id = %d;" % charID, LauncherCommons.GetDefaultStartCharacterData())
 
 func UpdateCharacter(player : PlayerAgent) -> bool:
 	if player == null:
