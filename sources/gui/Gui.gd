@@ -110,17 +110,10 @@ func OpenDiscord():
 	OS.shell_open(LauncherCommons.SocialLink)
 
 func DisplayFirstLogin():
-	if LauncherCommons.isWeb:
-		UICommons.MessageBox("""Welcome to Source of Mana!
-
-You're currently playing the browser single-player version.
-
-Your progress is saved locally in this browser, so keep using the same browser and device if you want to continue from the same save.
-
-For the best performance, we still recommend the native client found on our itch.io page (Available on Windows, Linux, macOS, and Android).
-""",
-			settingsWindow.set_sessionfirstlogin.bind(false), "OK",
-			OpenDiscord, "Join our Discord")
+	if LauncherCommons.IsWebSinglePlayer():
+		if settingsWindow:
+			settingsWindow.set_sessionfirstlogin(false)
+		return
 	else:
 		UICommons.MessageBox("""Welcome to Source of Mana!
 
